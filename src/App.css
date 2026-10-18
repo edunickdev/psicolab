@@ -635,57 +635,254 @@ body {
   flex-wrap: wrap;
 }
 
-.option-button-horizontal {
+/* Card Spacing Definition */
+.options-horizontal {
+  --card-spacing: 189px;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Card 3D Wrapper */
+.card-3d-wrapper {
   position: relative;
-  padding: 0;
-  border: 2px solid var(--option-card-border);
-  background: var(--option-card-bg);
-  border-radius: 18px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
   width: 165px;
-  box-shadow: var(--option-card-shadow);
+  height: 204px;
+  perspective: 1200px;
+  will-change: transform;
 }
 
-.option-image-horizontal {
+/* Contenedor Giratorio 3D */
+.card-3d-inner {
+  position: relative;
   width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.4s ease;
+  height: 100%;
+  transform-style: preserve-3d;
+  border-radius: 18px;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
-.option-button-horizontal:hover:not(:disabled) {
+/* ==========================================================================
+   Fluid Multi-Phase Physical Shuffle Choreography
+   (Gather -> Riffle -> Deal -> Reveal)
+   ========================================================================== */
+
+/* FASE 1: flipping-down - Las cartas se elevan suavemente y giran boca abajo */
+.phase-flipping-down {
+  transform: translate3d(0, -10px, 0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.phase-flipping-down .card-3d-inner {
+  transform: rotateY(180deg);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* FASE 2: gathering - Las 3 cartas se reúnen suavemente en el centro formando una baraja */
+.phase-gathering {
+  transition: transform 0.42s cubic-bezier(0.38, 0, 0.24, 1);
+}
+
+.phase-gathering.slot-0 {
+  transform: translate3d(var(--card-spacing), -5px, 20px) rotate(4deg) scale(0.98);
+  z-index: 4;
+}
+
+.phase-gathering.slot-1 {
+  transform: translate3d(0, 0, 0) scale(0.96);
+  z-index: 1;
+}
+
+.phase-gathering.slot-2 {
+  transform: translate3d(calc(-1 * var(--card-spacing)), 5px, 40px) rotate(-4deg) scale(0.98);
+  z-index: 5;
+}
+
+.phase-gathering .card-3d-inner {
+  transform: rotateY(180deg);
+}
+
+/* FASE 3: riffle - Corte / Barajeo rápido en el centro */
+.phase-riffle {
+  transition: transform 0.28s ease-in-out;
+}
+
+.phase-riffle.slot-0 {
+  transform: translate3d(calc(var(--card-spacing) + 16px), -12px, 30px) rotate(6deg) scale(1.01);
+  z-index: 6;
+}
+
+.phase-riffle.slot-1 {
+  transform: translate3d(-10px, 8px, 10px) rotate(-3deg) scale(0.97);
+  z-index: 2;
+}
+
+.phase-riffle.slot-2 {
+  transform: translate3d(calc(-1 * var(--card-spacing) - 16px), 8px, 45px) rotate(-6deg) scale(1.02);
+  z-index: 8;
+}
+
+.phase-riffle .card-3d-inner {
+  transform: rotateY(180deg);
+}
+
+/* FASE 4: dealing - Reparto fluido hacia sus nuevos slots con curva elástica */
+.phase-dealing {
+  transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--slot-index) * 45ms);
+  z-index: 2;
+}
+
+.phase-dealing .card-3d-inner {
+  transform: rotateY(180deg);
+}
+
+/* FASE 5: flipping-up - Volteo hacia arriba en cascada 1-2-3 */
+.phase-flipping-up {
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.phase-flipping-up .card-3d-inner {
+  transform: rotateY(0deg);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--slot-index) * 60ms);
+}
+
+/* FASE 6: idle - Reposo interactivo */
+.phase-idle {
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.phase-idle .card-3d-inner {
+  transform: rotateY(0deg);
+}
+
+/* Botón 3D de la Carta */
+.option-button-3d {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  perspective: 1200px;
+  outline: none;
+  border-radius: 18px;
+}
+
+.option-button-3d:disabled {
+  cursor: default;
+}
+
+/* Caras de la Carta */
+.card-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  box-shadow: var(--option-card-shadow);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Cara Frontal */
+.card-front {
+  background: var(--option-card-bg);
+  border: 2px solid var(--option-card-border);
+  transform: rotateY(0deg);
+}
+
+.option-button-3d:hover:not(:disabled) .card-front {
   border-color: var(--option-hover-border);
-  transform: translateY(-8px) scale(1.03);
   box-shadow: var(--option-hover-shadow);
+  transform: translateY(-4px) scale(1.02);
 }
 
-.option-button-horizontal:hover:not(:disabled) .option-image-horizontal {
+.option-button-3d:hover:not(:disabled) .option-image-horizontal {
   transform: scale(1.04);
 }
 
-.option-button-horizontal:active:not(:disabled) {
-  transform: translateY(-2px) scale(0.99);
+.option-button-3d:active:not(:disabled) .card-front {
+  transform: translateY(-1px) scale(0.99);
 }
 
-.option-button-horizontal:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-  filter: grayscale(20%);
-}
-
-.option-button-horizontal.correct {
+.option-button-3d.correct .card-front {
   border-color: var(--color-success) !important;
   box-shadow: 0 0 30px rgba(16, 185, 129, 0.5), 0 15px 30px rgba(0, 0, 0, 0.15);
   animation: pulseSuccess 0.5s ease;
 }
 
-.option-button-horizontal.incorrect {
+.option-button-3d.incorrect .card-front {
   border-color: var(--color-error) !important;
   box-shadow: 0 0 30px rgba(239, 68, 68, 0.5), 0 15px 30px rgba(0, 0, 0, 0.15);
   animation: shakeSoft 0.5s ease;
+}
+
+/* Cara Posterior (Dorso de Tarot) */
+.card-back {
+  background: #1e1b4b;
+  border: 2px solid rgba(245, 158, 11, 0.4);
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.3);
+}
+
+.tarot-card-back-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.option-image-horizontal {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+/* Cara Frontal: Opción Textual (Fase A -> B) */
+.text-option-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 1rem;
+  background: var(--option-card-bg);
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.text-option-card::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed var(--counter-border);
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.text-option-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-title);
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  z-index: 1;
 }
 
 .option-status-overlay {
@@ -699,6 +896,7 @@ body {
   color: white;
   backdrop-filter: blur(4px);
   animation: fadeIn 0.2s ease;
+  border-radius: 16px;
 }
 
 .option-status-overlay.correct {
@@ -1109,15 +1307,13 @@ body {
   }
 
   .options-horizontal {
+    --card-spacing: 132.8px;
     gap: 0.8rem;
   }
 
-  .option-button-horizontal {
+  .card-3d-wrapper {
     width: 120px;
-  }
-
-  .option-image-horizontal {
-    height: 150px;
+    height: 155px;
   }
 
   .main-stimulus-image {

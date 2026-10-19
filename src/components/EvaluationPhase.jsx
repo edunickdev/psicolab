@@ -377,48 +377,6 @@ function EvaluationPhase({ onBackToTraining }) {
           </span>
         </div>
 
-        {/* Encabezado con título de la propiedad evaluada y selector de clase */}
-        <div className="training-header">
-          <div className="phase-badge-container">
-            <span className="phase-badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>
-              Momento 2: Evaluación
-            </span>
-            <span className="relation-tag" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }}>
-              {currentTrial.propertyTitle}
-            </span>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-subtitle)', background: 'var(--stimulus-badge-bg)', padding: '0.2rem 0.6rem', borderRadius: '8px' }}>
-              Pantalla {currentTrial.screenNumber} de 27
-            </span>
-          </div>
-
-          {/* Filtro rápido por clase (opcional para el experimentador) */}
-          <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem' }}>
-            {[
-              { id: 'all', label: 'Todas las Clases' },
-              { id: 1, label: 'Clase 1: Dinero' },
-              { id: 2, label: 'Clase 2: Embarazo' },
-              { id: 3, label: 'Clase 3: Trabajo' },
-            ].map(f => (
-              <button
-                key={f.id}
-                onClick={() => handleFilterChange(f.id)}
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: classFilter === f.id ? 700 : 500,
-                  padding: '0.25rem 0.65rem',
-                  borderRadius: '9999px',
-                  border: classFilter === f.id ? '1px solid #6366f1' : '1px solid var(--counter-border)',
-                  background: classFilter === f.id ? 'rgba(99, 102, 241, 0.18)' : 'transparent',
-                  color: classFilter === f.id ? '#6366f1' : 'var(--text-subtitle)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Estímulo Muestra (Sample) */}
         <div className="stimulus-display">

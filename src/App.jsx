@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { tarotCards } from './data/tarotCards';
+import ExperimentRunner from './components/ExperimentRunner';
 import TrainingPhase from './components/TrainingPhase';
 import EvaluationPhase from './components/EvaluationPhase';
 import './App.css';
@@ -8,7 +9,8 @@ import './App.css';
 const ECO_MAX = 6;
 
 function App() {
-  const [currentView, setCurrentView] = useState('training'); // Iniciamos en entrenamiento
+  // Por defecto ejecutamos el Experimento Completo (27 Pantallas de corrido)
+  const [currentView, setCurrentView] = useState('experiment');
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('psico_theme') || 'light';
   });
@@ -32,6 +34,8 @@ function App() {
 
   const renderContent = () => {
     switch (currentView) {
+      case 'experiment':
+        return <ExperimentRunner onResponse={handleResponse} />;
       case 'training':
         return (
           <TrainingPhase
@@ -42,14 +46,9 @@ function App() {
           />
         );
       case 'evaluation':
-        return <EvaluationPhase onBackToTraining={() => setCurrentView('training')} />;
+        return <EvaluationPhase onBackToTraining={() => setCurrentView('experiment')} />;
       default:
-        return (
-          <div className="home-content">
-            <h2>Bienvenido</h2>
-            <p>Selecciona un momento del menú lateral para comenzar</p>
-          </div>
-        );
+        return <ExperimentRunner onResponse={handleResponse} />;
     }
   };
 
@@ -62,25 +61,25 @@ function App() {
         </div>
         <nav className="sidebar-nav">
           <button
-            className={`nav-item ${currentView === 'home' ? 'active' : ''}`}
-            onClick={() => handleNavigation('home')}
+            className={`nav-item ${currentView === 'experiment' ? 'active' : ''}`}
+            onClick={() => handleNavigation('experiment')}
           >
-            <span className="nav-icon">🏠</span>
-            <span className="nav-label">Inicio</span>
+            <span className="nav-icon">🎯</span>
+            <span className="nav-label">Experimento (27 Pantallas)</span>
           </button>
           <button
             className={`nav-item ${currentView === 'training' ? 'active' : ''}`}
             onClick={() => handleNavigation('training')}
           >
             <span className="nav-icon">📚</span>
-            <span className="nav-label">Momento 1: Entrenamiento</span>
+            <span className="nav-label">Solo Entrenamiento</span>
           </button>
           <button
             className={`nav-item ${currentView === 'evaluation' ? 'active' : ''}`}
             onClick={() => handleNavigation('evaluation')}
           >
             <span className="nav-icon">📝</span>
-            <span className="nav-label">Momento 2: Evaluación</span>
+            <span className="nav-label">Solo Evaluación</span>
           </button>
         </nav>
 

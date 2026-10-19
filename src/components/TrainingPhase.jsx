@@ -241,13 +241,6 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
           <span className="attempts-number">{attemptsRemaining}/{maxAttempts}</span>
         </div>
 
-        {/* Encabezado con título y etiquetas de fase */}
-        <div className="training-header">
-          <div className="phase-badge-container">
-            <span className="phase-badge">Momento 1: Entrenamiento</span>
-            <span className="relation-tag">{titleInfo.relation}</span>
-          </div>
-        </div>
 
         {/* Estímulo Muestra (Sample) */}
         <div className="stimulus-display">

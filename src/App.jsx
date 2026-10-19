@@ -1,14 +1,24 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { tarotCards } from './data/tarotCards';
 import TrainingPhase from './components/TrainingPhase';
 import EvaluationPhase from './components/EvaluationPhase';
 import './App.css';
+
+// Rango del entorno: ±ECO_MAX respuestas netas para llegar a sol pleno / tormenta total
+const ECO_MAX = 6;
 
 function App() {
   const [currentView, setCurrentView] = useState('training'); // Iniciamos en entrenamiento
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('psico_theme') || 'light';
   });
+
+  // Estado ambiental contingente: + aciertos / − errores
+  const [ecoScore, setEcoScore] = useState(0);
+
+  const handleResponse = useCallback((isCorrect) => {
+    setEcoScore(prev => Math.max(-ECO_MAX, Math.min(ECO_MAX, prev + (isCorrect ? 1 : -1))));
+  }, []);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
@@ -23,9 +33,16 @@ function App() {
   const renderContent = () => {
     switch (currentView) {
       case 'training':
-        return <TrainingPhase cards={tarotCards} />;
+        return (
+          <TrainingPhase
+            cards={tarotCards}
+            onResponse={handleResponse}
+            ecoScore={ecoScore}
+            onProceedToEvaluation={() => setCurrentView('evaluation')}
+          />
+        );
       case 'evaluation':
-        return <EvaluationPhase cards={tarotCards} />;
+        return <EvaluationPhase onBackToTraining={() => setCurrentView('training')} />;
       default:
         return (
           <div className="home-content">

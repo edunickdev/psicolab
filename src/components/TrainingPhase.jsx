@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import CardAtmosphere from './CardAtmosphere';
 
 // Componente para el Dorso decorativo de la Carta de Tarot
 function TarotCardBack() {
@@ -70,12 +71,15 @@ function shuffleArray(array) {
   return arr;
 }
 
-function TrainingPhase({ cards }) {
-  const [feedback, setFeedback] = useState('');
+function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
   const [attempts, setAttempts] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [cardIndex, setCardIndex] = useState(0); // 0: Dinero, 1: Embarazo, 2: Trabajo
   const [trainingPhase, setTrainingPhase] = useState('AB'); // 'AB' o 'BC'
+
+  // Estados de refuerzo contingente inmediato ('correct' | 'incorrect' | null)
+  const [activeEffect, setActiveEffect] = useState(null);
+  const [effectKey, setEffectKey] = useState(0);
 
   // Estados de animación fluidos (Gather -> Riffle -> Deal -> Reveal)
   const [currentOptions, setCurrentOptions] = useState([]);
@@ -107,10 +111,20 @@ function TrainingPhase({ cards }) {
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
 
-    if (option.isCorrect) {
-      setFeedback('¡Correcto!');
-    } else {
-      setFeedback('Incorrecto');
+    // Disparar estímulo de refuerzo contingente (Rayos rojos en error / Pájaros en acierto)
+    const effectType = option.isCorrect ? 'correct' : 'incorrect';
+    setActiveEffect(effectType);
+    setEffectKey(prev => prev + 1);
+
+    onResponse?.(option.isCorrect);
+
+    // En el 4to y último intento: NO volver a barajar las cartas.
+    // Se mantiene la selección con su feedback y se habilita directamente el botón para avanzar.
+    if (newAttempts >= maxAttempts) {
+      setTimeout(() => {
+        setActiveEffect(null);
+      }, 1800);
+      return;
     }
 
     // 1. Mostrar resultado inicial con resplandor (700ms)
@@ -143,11 +157,9 @@ function TrainingPhase({ cards }) {
               setSelectedOption(null);
 
               setTimeout(() => {
-                // 7. Fase 6: Finalizado, reposo interactivo
+                // 7. Fase 6: Finalizado, reposo interactivo y regreso al paisaje neutro
                 setShufflePhase('idle');
-                if (newAttempts < maxAttempts) {
-                  setFeedback('');
-                }
+                setActiveEffect(null);
               }, 550);
             }, 500);
           }, 280);
@@ -156,22 +168,28 @@ function TrainingPhase({ cards }) {
     }, 700);
   };
 
+  const isLastTrainingStep = cardIndex + 1 >= cards.length && trainingPhase === 'BC';
+
   const handleNext = () => {
     if (shufflePhase !== 'idle') return;
 
+    setActiveEffect(null);
     if (trainingPhase === 'AB') {
       // Pasar a fase B→C para la misma carta
       setTrainingPhase('BC');
       setAttempts(0);
       setSelectedOption(null);
-      setFeedback('');
-    } else {
-      // Completó ambas fases (A→B y B→C), avanzar a la siguiente carta en orden
+    } else if (cardIndex + 1 < cards.length) {
+      // Avanzar a la siguiente carta de entrenamiento
       setTrainingPhase('AB');
       setAttempts(0);
       setSelectedOption(null);
-      setFeedback('');
       setCardIndex(prev => prev + 1);
+    } else {
+      // Completó el entrenamiento de las 3 cartas
+      if (onProceedToEvaluation) {
+        onProceedToEvaluation();
+      }
     }
   };
 
@@ -205,6 +223,9 @@ function TrainingPhase({ cards }) {
   return (
     <div className="training-phase">
       <div className="experiment-card">
+        {/* Overlay Atmosférico Contingente sobre la Tarjeta */}
+        <CardAtmosphere activeEffect={activeEffect} effectKey={effectKey} />
+
         {/* HUD Flotante: Contador de intentos en la esquina superior derecha */}
         <div className="attempts-hud" title={`Intentos restantes: ${attemptsRemaining} de ${maxAttempts}`}>
           <span className="attempts-hud-label">Intentos:</span>
@@ -304,26 +325,6 @@ function TrainingPhase({ cards }) {
           </div>
         </div>
 
-        {/* Zona de Feedback estable sin saltos de layout */}
-        <div className="feedback-container">
-          {feedback ? (
-            <div className={`feedback-badge ${feedback.includes('Correcto') ? 'correct' : 'incorrect'}`}>
-              <span className="feedback-icon">{feedback.includes('Correcto') ? '✓' : '✕'}</span>
-              <span className="feedback-text">{feedback}</span>
-            </div>
-          ) : attempts >= maxAttempts ? (
-            <div className="feedback-badge completed">
-              <span className="feedback-icon">🔒</span>
-              <span className="feedback-text">Has completado los 4 intentos. Presiona el botón para avanzar.</span>
-            </div>
-          ) : (
-            <div className="feedback-badge placeholder">
-              <span className="feedback-icon">💡</span>
-              <span className="feedback-text">Haz clic en una opción para evaluar tu respuesta.</span>
-            </div>
-          )}
-        </div>
-
         {/* Botón de Siguiente Paso / Carta */}
         <div className="actions-footer">
           <button 
@@ -331,7 +332,13 @@ function TrainingPhase({ cards }) {
             onClick={handleNext}
             disabled={!canProceed}
           >
-            <span>{trainingPhase === 'AB' ? 'Siguiente Paso (B → C)' : 'Siguiente Carta'}</span>
+            <span>
+              {trainingPhase === 'AB'
+                ? 'Siguiente Paso (B → C)'
+                : cardIndex + 1 < cards.length
+                ? `Siguiente Carta (${cards[(cardIndex + 1) % cards.length].name})`
+                : 'Pasar a Evaluación (Momento 2)'}
+            </span>
             <span className="btn-arrow">→</span>
           </button>
           {!canProceed && (

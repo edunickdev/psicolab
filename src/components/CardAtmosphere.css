@@ -1,0 +1,428 @@
+/* ==========================================================================
+   CARD ATMOSPHERE OVERLAY (REFORZAMIENTO DINÁMICO & PAISAJE NEUTRO)
+   - Paisaje de fondo: Siempre neutro, claro, armónico y agradable.
+   - Refuerzo en error: Tormenta de rayos rojos estilo Stranger Things
+     sincronizada en vivo con el barajeo de cartas.
+   - Refuerzo en acierto: Bandada de pájaros volando por la pantalla,
+     resplandor solar dorado y destellos cálidos.
+   ========================================================================== */
+
+.card-atmosphere-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   PAISAJE NEUTRO BASE (SIEMPRE VISIBLE DE FONDO)
+   ========================================================================== */
+.ca-neutral-base {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+/* Franja Alta: Cielo Neutro */
+.ca-neutral-sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, rgba(224, 242, 254, 0.4) 0%, rgba(241, 245, 249, 0.15) 60%, transparent 100%);
+  overflow: hidden;
+  border-radius: 28px 28px 0 0;
+}
+
+/* Sol neutro tranquilo */
+.ca-neutral-sun {
+  position: absolute;
+  top: 14px;
+  left: 14%;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffbeb 30%, #fde047 70%, rgba(250, 204, 21, 0.4) 100%);
+  box-shadow: 0 0 20px rgba(253, 224, 71, 0.45);
+  opacity: 0.85;
+}
+
+/* Nubes neutras suaves flotando con calma */
+.ca-neutral-cloud {
+  position: absolute;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
+  opacity: 0.85;
+}
+
+.ca-cloud-1 { top: 18px; left: 28%; width: 105px; animation: caDriftSlow 24s ease-in-out infinite alternate; }
+.ca-cloud-2 { top: 32px; left: 62%; width: 95px; animation: caDriftSlow 30s ease-in-out infinite alternate-reverse; }
+.ca-cloud-3 { top: 12px; left: 82%; width: 80px; animation: caDriftSlow 20s ease-in-out infinite alternate; }
+
+@keyframes caDriftSlow {
+  0% { transform: translateX(-12px); }
+  100% { transform: translateX(12px); }
+}
+
+/* Franja Baja: Suelo Neutro (Colinas y árboles verdes serenos) */
+.ca-neutral-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  overflow: hidden;
+  border-radius: 0 0 28px 28px;
+}
+
+.ca-ground-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================================================
+   REFUERZO DE ERROR: TORMENTA DE RAYOS ROJOS (STRANGER THINGS)
+   ========================================================================== */
+.st-storm-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  pointer-events: none;
+  animation: stFadeInOut 2.8s ease-in-out forwards;
+  z-index: 2;
+}
+
+/* Tinte oscuro-carmesí del cielo */
+.st-sky-tint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: radial-gradient(circle at 50% 20%, rgba(127, 29, 29, 0.5) 0%, rgba(69, 10, 10, 0.75) 50%, rgba(15, 23, 42, 0.8) 100%);
+  animation: stSkyPulse 2.8s ease-in-out forwards;
+}
+
+@keyframes stSkyPulse {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  80% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+/* Flash ambiental estroboscópico de relámpago */
+.st-screen-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(239, 68, 68, 0.3);
+  animation: stStrobeFlash 2.5s ease-out forwards;
+}
+
+@keyframes stStrobeFlash {
+  0% { opacity: 0; }
+  4% { opacity: 0.85; }
+  8% { opacity: 0.1; }
+  12% { opacity: 0.95; }
+  16% { opacity: 0.15; }
+  22% { opacity: 0.7; }
+  26% { opacity: 0.05; }
+  42% { opacity: 0.85; }
+  46% { opacity: 0.1; }
+  50% { opacity: 0.95; }
+  56% { opacity: 0.05; }
+  72% { opacity: 0.6; }
+  78% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Red de Rayos Rojos SVG */
+.st-lightning-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.st-bolt-glow {
+  filter: drop-shadow(0 0 10px #ff0033) drop-shadow(0 0 25px #dc2626) drop-shadow(0 0 45px #991b1b);
+}
+
+.st-bolt-main {
+  animation: stBoltFlicker 2.5s ease-out forwards;
+}
+
+.st-bolt-branch {
+  animation: stBoltBranchFlicker 2.5s ease-out forwards;
+}
+
+@keyframes stBoltFlicker {
+  0% { opacity: 0; }
+  3% { opacity: 1; }
+  7% { opacity: 0.1; }
+  11% { opacity: 1; }
+  15% { opacity: 0.2; }
+  20% { opacity: 0.95; }
+  25% { opacity: 0; }
+  41% { opacity: 1; }
+  45% { opacity: 0.15; }
+  49% { opacity: 1; }
+  55% { opacity: 0; }
+  70% { opacity: 0.85; }
+  76% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes stBoltBranchFlicker {
+  0% { opacity: 0; }
+  5% { opacity: 0.9; }
+  9% { opacity: 0; }
+  13% { opacity: 1; }
+  18% { opacity: 0; }
+  43% { opacity: 0.95; }
+  47% { opacity: 0; }
+  51% { opacity: 1; }
+  57% { opacity: 0; }
+  72% { opacity: 0.8; }
+  77% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Esporas / Cenizas rojas flotantes tipo Upside Down */
+.st-ember {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f87171;
+  box-shadow: 0 0 8px #ef4444, 0 0 16px #dc2626;
+  animation: stEmberFloat 2.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes stEmberFloat {
+  0% {
+    transform: translateY(40px) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-160px) translateX(var(--drift-x, 15px)) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* Viñeta roja pulsante de la tarjeta */
+.st-vignette {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  box-shadow: inset 0 0 100px rgba(220, 38, 38, 0.75), inset 0 0 40px rgba(239, 68, 68, 0.8);
+  animation: stVignettePulse 2.8s ease-in-out forwards;
+}
+
+@keyframes stVignettePulse {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+@keyframes stFadeInOut {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ==========================================================================
+   REFUERZO DE ACIERTO: BANDADA DE PÁJAROS & RESPLANDOR DORADO
+   ========================================================================== */
+.birds-celebration-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  pointer-events: none;
+  animation: birdsFadeInOut 2.8s ease-in-out forwards;
+  z-index: 2;
+}
+
+/* Resplandor cálido de cielo */
+.birds-sky-tint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: radial-gradient(circle at 50% 15%, rgba(254, 240, 138, 0.45) 0%, rgba(186, 230, 253, 0.35) 50%, transparent 100%);
+  animation: birdsSkyBloom 2.8s ease-in-out forwards;
+}
+
+@keyframes birdsSkyBloom {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  80% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+/* Sol radiante en celebración */
+.birds-sunburst {
+  position: absolute;
+  top: 6px;
+  left: 12%;
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+  animation: birdsSunburstPop 2.8s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+}
+
+.birds-sunburst-core {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 10%, #fde047 60%, #f59e0b 100%);
+  box-shadow: 0 0 35px #fde047, 0 0 65px rgba(245, 158, 11, 0.7);
+}
+
+.birds-sunburst-rays {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(253, 224, 71, 0.6) 0deg,
+    transparent 20deg,
+    rgba(253, 224, 71, 0.5) 45deg,
+    transparent 65deg,
+    rgba(253, 224, 71, 0.6) 90deg,
+    transparent 110deg,
+    rgba(253, 224, 71, 0.5) 135deg,
+    transparent 155deg,
+    rgba(253, 224, 71, 0.6) 180deg,
+    transparent 200deg,
+    rgba(253, 224, 71, 0.5) 225deg,
+    transparent 245deg,
+    rgba(253, 224, 71, 0.6) 270deg,
+    transparent 290deg,
+    rgba(253, 224, 71, 0.5) 315deg,
+    transparent 335deg,
+    rgba(253, 224, 71, 0.6) 360deg
+  );
+  animation: birdsSpinRays 16s linear infinite;
+  mask-image: radial-gradient(circle, black 30%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle, black 30%, transparent 72%);
+}
+
+@keyframes birdsSunburstPop {
+  0% { transform: scale(0.6); opacity: 0; }
+  15% { transform: scale(1.1); opacity: 1; }
+  80% { transform: scale(1.05); opacity: 0.95; }
+  100% { transform: scale(0.9); opacity: 0; }
+}
+
+@keyframes birdsSpinRays {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Bandada de Pájaros cruzando la pantalla */
+.ca-flock-bird {
+  position: absolute;
+  pointer-events: none;
+  animation: birdSwoopAcross 2.6s cubic-bezier(0.35, 0.2, 0.2, 1) forwards;
+}
+
+.ca-bird-body {
+  width: 100%;
+  height: 100%;
+}
+
+.ca-bird-wing-beat {
+  transform-origin: center;
+  animation: birdWingFlap 0.28s ease-in-out infinite alternate;
+}
+
+@keyframes birdWingFlap {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(0.38) translateY(2px); }
+}
+
+@keyframes birdSwoopAcross {
+  0% {
+    transform: translate(var(--start-x, -80px), var(--start-y, 140px)) scale(var(--bird-scale, 0.8));
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--end-x, 950px), var(--end-y, -40px)) scale(calc(var(--bird-scale, 0.8) * 1.15));
+    opacity: 0;
+  }
+}
+
+/* Destellos dorados flotantes */
+.ca-sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fef08a;
+  box-shadow: 0 0 10px #facc15, 0 0 20px #eab308;
+  animation: sparkleFloat 2.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes sparkleFloat {
+  0% {
+    transform: translateY(30px) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-140px) translateX(var(--drift-x, 15px)) scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Viñeta dorada cálida */
+.birds-vignette {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  box-shadow: inset 0 0 85px rgba(250, 204, 21, 0.4), inset 0 0 35px rgba(253, 224, 71, 0.45);
+  animation: birdsVignettePulse 2.8s ease-in-out forwards;
+}
+
+@keyframes birdsVignettePulse {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  80% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+@keyframes birdsFadeInOut {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}

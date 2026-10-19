@@ -1,13 +1,7 @@
-// Importación de imágenes reales desde src/assets
+// Archivo de datos generado con referencias exactas a src/assets/extracted y src/assets
 import a1Img from '../assets/a1.jpeg';
 import a2Img from '../assets/a2 embarazo.png';
 import a3Img from '../assets/a3 trabajo.png';
-import a4FamiliaImg from '../assets/a4_familia.png';
-import a5MuerteImg from '../assets/a5_muerte.png';
-import a6SexoImg from '../assets/a6_sexo.png';
-import a7AmorImg from '../assets/a7_amor.png';
-import a8InfidelidadImg from '../assets/a8_infidelidad.png';
-import a9EnfermedadImg from '../assets/a9_enfermedad.png';
 
 import c1Img from '../assets/c1 dinero.png';
 import c2Img from '../assets/c2 embarazo.png';
@@ -16,8 +10,34 @@ import c4Img from '../assets/c4 familia.png';
 import c5Img from '../assets/c5 muerte.png';
 import c6Img from '../assets/c6 sexo.png';
 import c7Img from '../assets/c7 amor.png';
-import c8Img from '../assets/c9 infidelidad.png'; // C8 Infidelidad
-import c9Img from '../assets/c9 emfermedad.png';  // C9 Enfermedad
+import c8Img from '../assets/c9 infidelidad.png';
+import c9Img from '../assets/c9 emfermedad.png';
+
+// Imágenes extraídas directamente de la presentación PPTX
+import img1 from '../assets/extracted/image1.png';
+import img5 from '../assets/extracted/image5.png';
+import img6 from '../assets/extracted/image6.png';
+import img7 from '../assets/extracted/image7.png';
+import img8 from '../assets/extracted/image8.png';
+import img9 from '../assets/extracted/image9.png';
+import img10 from '../assets/extracted/image10.png';
+import img11 from '../assets/extracted/image11.png';
+import img14 from '../assets/extracted/image14.png';
+import img15 from '../assets/extracted/image15.png';
+import img24 from '../assets/extracted/image24.png';
+import img25 from '../assets/extracted/image25.png';
+import img26 from '../assets/extracted/image26.png';
+import img27 from '../assets/extracted/image27.png';
+import img28 from '../assets/extracted/image28.png';
+import img29 from '../assets/extracted/image29.png';
+import img30 from '../assets/extracted/image30.png';
+import img31 from '../assets/extracted/image31.png';
+import img32 from '../assets/extracted/image32.png';
+import img34 from '../assets/extracted/image34.png';
+import img35 from '../assets/extracted/image35.png';
+import img36 from '../assets/extracted/image36.png';
+import img37 from '../assets/extracted/image37.png';
+import img44 from '../assets/extracted/image44.png';
 
 export const tarotCards = [
   {
@@ -34,9 +54,9 @@ export const tarotCards = [
       { id: 'b5', type: 'text', text: 'Muerte', isCorrect: false }
     ],
     optionsBC: [
-      { id: 'c1', type: 'image', imageUrl: c1Img, label: 'Dinero', isCorrect: true },
       { id: 'c4', type: 'image', imageUrl: c4Img, label: 'Familia', isCorrect: false },
-      { id: 'c5', type: 'image', imageUrl: c5Img, label: 'Muerte', isCorrect: false }
+      { id: 'c5', type: 'image', imageUrl: c5Img, label: 'Muerte', isCorrect: false },
+      { id: 'c1', type: 'image', imageUrl: c1Img, label: 'Dinero', isCorrect: true }
     ]
   },
   {
@@ -53,8 +73,8 @@ export const tarotCards = [
       { id: 'b7', type: 'text', text: 'Amor', isCorrect: false }
     ],
     optionsBC: [
-      { id: 'c2', type: 'image', imageUrl: c2Img, label: 'Embarazo', isCorrect: true },
       { id: 'c6', type: 'image', imageUrl: c6Img, label: 'Sexo', isCorrect: false },
+      { id: 'c2', type: 'image', imageUrl: c2Img, label: 'Embarazo', isCorrect: true },
       { id: 'c7', type: 'image', imageUrl: c7Img, label: 'Amor', isCorrect: false }
     ]
   },
@@ -67,8 +87,8 @@ export const tarotCards = [
     stimulusC: c3Img,
     labelC: 'Trabajo',
     optionsAB: [
-      { id: 'b3', type: 'text', text: 'Trabajo', isCorrect: true },
       { id: 'b8', type: 'text', text: 'Infidelidad', isCorrect: false },
+      { id: 'b3', type: 'text', text: 'Trabajo', isCorrect: true },
       { id: 'b9', type: 'text', text: 'Enfermedad', isCorrect: false }
     ],
     optionsBC: [
@@ -79,17 +99,6 @@ export const tarotCards = [
   }
 ];
 
-/**
- * SECUENCIA COMPLETA DE 27 PANTALLAS DE CORRIDO:
- *
- * Flujo exacto por clase:
- * 1. Clase 1: A1 (4 intentos) -> B1 (4 intentos) -> 7 pruebas de Reflexividad, Simetría, Transitividad y Equivalencia de A1
- * 2. Clase 2: A2 (4 intentos) -> B2 (4 intentos) -> 7 pruebas de Reflexividad, Simetría, Transitividad y Equivalencia de A2
- * 3. Clase 3: A3 (4 intentos) -> B3 (4 intentos) -> 7 pruebas de Reflexividad, Simetría, Transitividad y Equivalencia de A3
- *
- * En entrenamiento: 4 intentos con barajeo y refuerzo (Stranger Things / Pájaros).
- * En evaluación: 1 intento único, sin refuerzo contingente (extinción).
- */
 export const experimentSequence = [
   // =========================================================================
   // BLOQUE CLASE 1: DINERO (Pantallas 1 a 9)
@@ -127,9 +136,9 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B1):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c1', type: 'image', imageUrl: c1Img, label: 'C1 Dinero', isCorrect: true },
       { id: 'c4', type: 'image', imageUrl: c4Img, label: 'C4 Familia', isCorrect: false },
-      { id: 'c5', type: 'image', imageUrl: c5Img, label: 'C5 Muerte', isCorrect: false }
+      { id: 'c5', type: 'image', imageUrl: c5Img, label: 'C5 Muerte', isCorrect: false },
+      { id: 'c1', type: 'image', imageUrl: c1Img, label: 'C1 Dinero', isCorrect: true }
     ]
   },
   {
@@ -142,13 +151,13 @@ export const experimentSequence = [
     relationType: 'A1 → A1',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: a1Img, label: 'A1 Dinero' },
+    sample: { type: 'image', value: img1, label: 'A1 Dinero' },
     stimulusLabel: 'Carta de Tarot presentada (A1):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a1', type: 'image', imageUrl: a1Img, label: 'A1 Dinero', isCorrect: true },
-      { id: 'a4', type: 'image', imageUrl: a4FamiliaImg, label: 'A4 Familia', isCorrect: false },
-      { id: 'a5', type: 'image', imageUrl: a5MuerteImg, label: 'A5 Muerte', isCorrect: false }
+      { id: 'a1', type: 'image', imageUrl: img7, label: 'A1 Dinero', isCorrect: true },
+      { id: 'a4', type: 'image', imageUrl: img5, label: 'A4 Familia', isCorrect: false },
+      { id: 'a5', type: 'image', imageUrl: img6, label: 'A5 Muerte', isCorrect: false }
     ]
   },
   {
@@ -180,13 +189,13 @@ export const experimentSequence = [
     relationType: 'C1 → C1',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c1Img, label: 'C1 Dinero' },
+    sample: { type: 'image', value: img8, label: 'C1 Dinero' },
     stimulusLabel: 'Imagen presentada (C1):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c1', type: 'image', imageUrl: c1Img, label: 'C1 Dinero', isCorrect: true },
-      { id: 'c4', type: 'image', imageUrl: c4Img, label: 'C4 Familia', isCorrect: false },
-      { id: 'c5', type: 'image', imageUrl: c5Img, label: 'C5 Muerte', isCorrect: false }
+      { id: 'c1', type: 'image', imageUrl: img11, label: 'C1 Dinero', isCorrect: true },
+      { id: 'c4', type: 'image', imageUrl: img9, label: 'C4 Familia', isCorrect: false },
+      { id: 'c5', type: 'image', imageUrl: img10, label: 'C5 Muerte', isCorrect: false }
     ]
   },
   {
@@ -203,9 +212,9 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B1):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a1', type: 'image', imageUrl: a1Img, label: 'A1 Dinero', isCorrect: true },
-      { id: 'a4', type: 'image', imageUrl: a4FamiliaImg, label: 'A4 Familia', isCorrect: false },
-      { id: 'a5', type: 'image', imageUrl: a5MuerteImg, label: 'A5 Muerte', isCorrect: false }
+      { id: 'a1', type: 'image', imageUrl: img7, label: 'A1 Dinero', isCorrect: true },
+      { id: 'a4', type: 'image', imageUrl: img5, label: 'A4 Familia', isCorrect: false },
+      { id: 'a5', type: 'image', imageUrl: img6, label: 'A5 Muerte', isCorrect: false }
     ]
   },
   {
@@ -218,7 +227,7 @@ export const experimentSequence = [
     relationType: 'C1 → B1',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c1Img, label: 'C1 Dinero' },
+    sample: { type: 'image', value: img8, label: 'C1 Dinero' },
     stimulusLabel: 'Imagen presentada (C1):',
     optionsLabel: 'Selecciona el concepto correspondiente (B):',
     options: [
@@ -237,13 +246,13 @@ export const experimentSequence = [
     relationType: 'A1 → C1',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: a1Img, label: 'A1 Dinero' },
+    sample: { type: 'image', value: img1, label: 'A1 Dinero' },
     stimulusLabel: 'Carta de Tarot presentada (A1):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c1', type: 'image', imageUrl: c1Img, label: 'C1 Dinero', isCorrect: true },
-      { id: 'c4', type: 'image', imageUrl: c4Img, label: 'C4 Familia', isCorrect: false },
-      { id: 'c5', type: 'image', imageUrl: c5Img, label: 'C5 Muerte', isCorrect: false }
+      { id: 'c1', type: 'image', imageUrl: img8, label: 'C1 Dinero', isCorrect: true },
+      { id: 'c4', type: 'image', imageUrl: img14, label: 'C4 Familia', isCorrect: false },
+      { id: 'c5', type: 'image', imageUrl: img15, label: 'C5 Muerte', isCorrect: false }
     ]
   },
   {
@@ -256,13 +265,13 @@ export const experimentSequence = [
     relationType: 'C1 → A1',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c1Img, label: 'C1 Dinero' },
+    sample: { type: 'image', value: img8, label: 'C1 Dinero' },
     stimulusLabel: 'Imagen presentada (C1):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a1', type: 'image', imageUrl: a1Img, label: 'A1 Dinero', isCorrect: true },
-      { id: 'a4', type: 'image', imageUrl: a4FamiliaImg, label: 'A4 Familia', isCorrect: false },
-      { id: 'a5', type: 'image', imageUrl: a5MuerteImg, label: 'A5 Muerte', isCorrect: false }
+      { id: 'a1', type: 'image', imageUrl: img7, label: 'A1 Dinero', isCorrect: true },
+      { id: 'a4', type: 'image', imageUrl: img5, label: 'A4 Familia', isCorrect: false },
+      { id: 'a5', type: 'image', imageUrl: img6, label: 'A5 Muerte', isCorrect: false }
     ]
   },
 
@@ -302,13 +311,13 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B2):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c2', type: 'image', imageUrl: c2Img, label: 'C2 Embarazo', isCorrect: true },
       { id: 'c6', type: 'image', imageUrl: c6Img, label: 'C6 Sexo', isCorrect: false },
+      { id: 'c2', type: 'image', imageUrl: c2Img, label: 'C2 Embarazo', isCorrect: true },
       { id: 'c7', type: 'image', imageUrl: c7Img, label: 'C7 Amor', isCorrect: false }
     ]
   },
   {
-    screenNumber: 12, // Corresponde al Slide 14
+    screenNumber: 12,
     classId: 2,
     className: 'Embarazo',
     mode: 'evaluation',
@@ -317,17 +326,17 @@ export const experimentSequence = [
     relationType: 'A2 → A2',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: a2Img, label: 'A2 Embarazo' },
+    sample: { type: 'image', value: img24, label: 'A2 Embarazo' },
     stimulusLabel: 'Carta de Tarot presentada (A2):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a2', type: 'image', imageUrl: a2Img, label: 'A2 Embarazo', isCorrect: true },
-      { id: 'a6', type: 'image', imageUrl: a6SexoImg, label: 'A6 Sexo', isCorrect: false },
-      { id: 'a7', type: 'image', imageUrl: a7AmorImg, label: 'A7 Amor', isCorrect: false }
+      { id: 'a6', type: 'image', imageUrl: img25, label: 'A6 Sexo', isCorrect: false },
+      { id: 'a2', type: 'image', imageUrl: img27, label: 'A2 Embarazo', isCorrect: true },
+      { id: 'a7', type: 'image', imageUrl: img26, label: 'A7 Amor', isCorrect: false }
     ]
   },
   {
-    screenNumber: 13, // Corresponde al Slide 16
+    screenNumber: 13,
     classId: 2,
     className: 'Embarazo',
     mode: 'evaluation',
@@ -340,13 +349,13 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B2):',
     optionsLabel: 'Selecciona el concepto correspondiente (B):',
     options: [
-      { id: 'b2', type: 'text', text: 'Embarazo', isCorrect: true },
       { id: 'b6', type: 'text', text: 'Sexo', isCorrect: false },
+      { id: 'b2', type: 'text', text: 'Embarazo', isCorrect: true },
       { id: 'b7', type: 'text', text: 'Amor', isCorrect: false }
     ]
   },
   {
-    screenNumber: 14, // Corresponde al Slide 18
+    screenNumber: 14,
     classId: 2,
     className: 'Embarazo',
     mode: 'evaluation',
@@ -355,17 +364,17 @@ export const experimentSequence = [
     relationType: 'C2 → C2',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c2Img, label: 'C2 Embarazo' },
+    sample: { type: 'image', value: img32, label: 'C2 Embarazo' },
     stimulusLabel: 'Imagen presentada (C2):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c2', type: 'image', imageUrl: c2Img, label: 'C2 Embarazo', isCorrect: true },
+      { id: 'c2', type: 'image', imageUrl: img44, label: 'C2 Embarazo', isCorrect: true },
       { id: 'c6', type: 'image', imageUrl: c6Img, label: 'C6 Sexo', isCorrect: false },
       { id: 'c7', type: 'image', imageUrl: c7Img, label: 'C7 Amor', isCorrect: false }
     ]
   },
   {
-    screenNumber: 15, // Corresponde al Slide 20
+    screenNumber: 15,
     classId: 2,
     className: 'Embarazo',
     mode: 'evaluation',
@@ -378,13 +387,13 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B2):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a2', type: 'image', imageUrl: a2Img, label: 'A2 Embarazo', isCorrect: true },
-      { id: 'a6', type: 'image', imageUrl: a6SexoImg, label: 'A6 Sexo', isCorrect: false },
-      { id: 'a7', type: 'image', imageUrl: a7AmorImg, label: 'A7 Amor', isCorrect: false }
+      { id: 'a2', type: 'image', imageUrl: img27, label: 'A2 Embarazo', isCorrect: true },
+      { id: 'a6', type: 'image', imageUrl: img25, label: 'A6 Sexo', isCorrect: false },
+      { id: 'a7', type: 'image', imageUrl: img26, label: 'A7 Amor', isCorrect: false }
     ]
   },
   {
-    screenNumber: 16, // Corresponde al Slide 21
+    screenNumber: 16,
     classId: 2,
     className: 'Embarazo',
     mode: 'evaluation',
@@ -393,17 +402,17 @@ export const experimentSequence = [
     relationType: 'C2 → B2',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c2Img, label: 'C2 Embarazo' },
+    sample: { type: 'image', value: img32, label: 'C2 Embarazo' },
     stimulusLabel: 'Imagen presentada (C2):',
     optionsLabel: 'Selecciona el concepto correspondiente (B):',
     options: [
       { id: 'b2', type: 'text', text: 'Embarazo', isCorrect: true },
-      { id: 'b7', type: 'text', text: 'Amor', isCorrect: false },
-      { id: 'b6', type: 'text', text: 'Sexo', isCorrect: false }
+      { id: 'b6', type: 'text', text: 'Sexo', isCorrect: false },
+      { id: 'b7', type: 'text', text: 'Amor', isCorrect: false }
     ]
   },
   {
-    screenNumber: 17, // Corresponde al Slide 24
+    screenNumber: 17,
     classId: 2,
     className: 'Embarazo',
     mode: 'evaluation',
@@ -412,17 +421,17 @@ export const experimentSequence = [
     relationType: 'A2 → C2',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: a2Img, label: 'A2 Embarazo' },
+    sample: { type: 'image', value: img24, label: 'A2 Embarazo' },
     stimulusLabel: 'Carta de Tarot presentada (A2):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c2', type: 'image', imageUrl: c2Img, label: 'C2 Embarazo', isCorrect: true },
+      { id: 'c2', type: 'image', imageUrl: img32, label: 'C2 Embarazo', isCorrect: true },
       { id: 'c6', type: 'image', imageUrl: c6Img, label: 'C6 Sexo', isCorrect: false },
       { id: 'c7', type: 'image', imageUrl: c7Img, label: 'C7 Amor', isCorrect: false }
     ]
   },
   {
-    screenNumber: 18, // Corresponde al Slide 25
+    screenNumber: 18,
     classId: 2,
     className: 'Embarazo',
     mode: 'evaluation',
@@ -431,13 +440,13 @@ export const experimentSequence = [
     relationType: 'C2 → A2',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c2Img, label: 'C2 Embarazo' },
+    sample: { type: 'image', value: img32, label: 'C2 Embarazo' },
     stimulusLabel: 'Imagen presentada (C2):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a2', type: 'image', imageUrl: a2Img, label: 'A2 Embarazo', isCorrect: true },
-      { id: 'a6', type: 'image', imageUrl: a6SexoImg, label: 'A6 Sexo', isCorrect: false },
-      { id: 'a7', type: 'image', imageUrl: a7AmorImg, label: 'A7 Amor', isCorrect: false }
+      { id: 'a2', type: 'image', imageUrl: img27, label: 'A2 Embarazo', isCorrect: true },
+      { id: 'a6', type: 'image', imageUrl: img25, label: 'A6 Sexo', isCorrect: false },
+      { id: 'a7', type: 'image', imageUrl: img26, label: 'A7 Amor', isCorrect: false }
     ]
   },
 
@@ -445,7 +454,7 @@ export const experimentSequence = [
   // BLOQUE CLASE 3: TRABAJO (Pantallas 19 a 27)
   // =========================================================================
   {
-    screenNumber: 19, // Corresponde al Slide 12
+    screenNumber: 19,
     classId: 3,
     className: 'Trabajo',
     mode: 'training',
@@ -458,13 +467,13 @@ export const experimentSequence = [
     stimulusLabel: 'Carta de Tarot presentada (A3):',
     optionsLabel: 'Selecciona el concepto correspondiente (B):',
     options: [
-      { id: 'b3', type: 'text', text: 'Trabajo', isCorrect: true },
       { id: 'b8', type: 'text', text: 'Infidelidad', isCorrect: false },
+      { id: 'b3', type: 'text', text: 'Trabajo', isCorrect: true },
       { id: 'b9', type: 'text', text: 'Enfermedad', isCorrect: false }
     ]
   },
   {
-    screenNumber: 20, // Corresponde al Slide 13
+    screenNumber: 20,
     classId: 3,
     className: 'Trabajo',
     mode: 'training',
@@ -477,13 +486,13 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B3):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c3', type: 'image', imageUrl: c3Img, label: 'Trabajo', isCorrect: true },
-      { id: 'c8', type: 'image', imageUrl: c8Img, label: 'Infidelidad', isCorrect: false },
-      { id: 'c9', type: 'image', imageUrl: c9Img, label: 'Enfermedad', isCorrect: false }
+      { id: 'c3', type: 'image', imageUrl: c3Img, label: 'C3 Trabajo', isCorrect: true },
+      { id: 'c8', type: 'image', imageUrl: c8Img, label: 'C8 Infidelidad', isCorrect: false },
+      { id: 'c9', type: 'image', imageUrl: c9Img, label: 'C9 Enfermedad', isCorrect: false }
     ]
   },
   {
-    screenNumber: 21, // Corresponde al Slide 15
+    screenNumber: 21,
     classId: 3,
     className: 'Trabajo',
     mode: 'evaluation',
@@ -492,17 +501,17 @@ export const experimentSequence = [
     relationType: 'A3 → A3',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: a3Img, label: 'A3 Trabajo' },
+    sample: { type: 'image', value: img28, label: 'A3 Trabajo' },
     stimulusLabel: 'Carta de Tarot presentada (A3):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a3', type: 'image', imageUrl: a3Img, label: 'A3 Trabajo', isCorrect: true },
-      { id: 'a8', type: 'image', imageUrl: a8InfidelidadImg, label: 'A8 Infidelidad', isCorrect: false },
-      { id: 'a9', type: 'image', imageUrl: a9EnfermedadImg, label: 'A9 Enfermedad', isCorrect: false }
+      { id: 'a9', type: 'image', imageUrl: img30, label: 'A9 Enfermedad', isCorrect: false },
+      { id: 'a8', type: 'image', imageUrl: img29, label: 'A8 Infidelidad', isCorrect: false },
+      { id: 'a3', type: 'image', imageUrl: img31, label: 'A3 Trabajo', isCorrect: true }
     ]
   },
   {
-    screenNumber: 22, // Corresponde al Slide 17
+    screenNumber: 22,
     classId: 3,
     className: 'Trabajo',
     mode: 'evaluation',
@@ -515,13 +524,13 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B3):',
     optionsLabel: 'Selecciona el concepto correspondiente (B):',
     options: [
+      { id: 'b9', type: 'text', text: 'Infidelidad', isCorrect: false },
       { id: 'b3', type: 'text', text: 'Trabajo', isCorrect: true },
-      { id: 'b8', type: 'text', text: 'Infidelidad', isCorrect: false },
-      { id: 'b9', type: 'text', text: 'Enfermedad', isCorrect: false }
+      { id: 'b8', type: 'text', text: 'Enfermedad', isCorrect: false }
     ]
   },
   {
-    screenNumber: 23, // Corresponde al Slide 19
+    screenNumber: 23,
     classId: 3,
     className: 'Trabajo',
     mode: 'evaluation',
@@ -530,17 +539,17 @@ export const experimentSequence = [
     relationType: 'C3 → C3',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c3Img, label: 'C3 Trabajo' },
+    sample: { type: 'image', value: img34, label: 'C3 Trabajo' },
     stimulusLabel: 'Imagen presentada (C3):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c3', type: 'image', imageUrl: c3Img, label: 'C3 Trabajo', isCorrect: true },
-      { id: 'c8', type: 'image', imageUrl: c8Img, label: 'C8 Infidelidad', isCorrect: false },
-      { id: 'c9', type: 'image', imageUrl: c9Img, label: 'C9 Enfermedad', isCorrect: false }
+      { id: 'c3', type: 'image', imageUrl: img37, label: 'C3 Trabajo', isCorrect: true },
+      { id: 'c8', type: 'image', imageUrl: img35, label: 'C8 Infidelidad', isCorrect: false },
+      { id: 'c9', type: 'image', imageUrl: img36, label: 'C9 Enfermedad', isCorrect: false }
     ]
   },
   {
-    screenNumber: 24, // Corresponde al Slide 22
+    screenNumber: 24,
     classId: 3,
     className: 'Trabajo',
     mode: 'evaluation',
@@ -553,13 +562,13 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B3):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a3', type: 'image', imageUrl: a3Img, label: 'A3 Trabajo', isCorrect: true },
-      { id: 'a8', type: 'image', imageUrl: a8InfidelidadImg, label: 'A8 Infidelidad', isCorrect: false },
-      { id: 'a9', type: 'image', imageUrl: a9EnfermedadImg, label: 'A9 Enfermedad', isCorrect: false }
+      { id: 'a3', type: 'image', imageUrl: img31, label: 'A3 Trabajo', isCorrect: true },
+      { id: 'a8', type: 'image', imageUrl: img29, label: 'A8 Infidelidad', isCorrect: false },
+      { id: 'a9', type: 'image', imageUrl: img30, label: 'A9 Enfermedad', isCorrect: false }
     ]
   },
   {
-    screenNumber: 25, // Corresponde al Slide 23
+    screenNumber: 25,
     classId: 3,
     className: 'Trabajo',
     mode: 'evaluation',
@@ -568,7 +577,7 @@ export const experimentSequence = [
     relationType: 'C3 → B3',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c3Img, label: 'C3 Trabajo' },
+    sample: { type: 'image', value: img34, label: 'C3 Trabajo' },
     stimulusLabel: 'Imagen presentada (C3):',
     optionsLabel: 'Selecciona el concepto correspondiente (B):',
     options: [
@@ -578,7 +587,7 @@ export const experimentSequence = [
     ]
   },
   {
-    screenNumber: 26, // Corresponde al Slide 26
+    screenNumber: 26,
     classId: 3,
     className: 'Trabajo',
     mode: 'evaluation',
@@ -587,17 +596,17 @@ export const experimentSequence = [
     relationType: 'A3 → C3',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: a3Img, label: 'A3 Trabajo' },
+    sample: { type: 'image', value: img28, label: 'A3 Trabajo' },
     stimulusLabel: 'Carta de Tarot presentada (A3):',
     optionsLabel: 'Selecciona la imagen correspondiente (C):',
     options: [
-      { id: 'c3', type: 'image', imageUrl: c3Img, label: 'C3 Trabajo', isCorrect: true },
-      { id: 'c8', type: 'image', imageUrl: c8Img, label: 'C8 Infidelidad', isCorrect: false },
-      { id: 'c9', type: 'image', imageUrl: c9Img, label: 'C9 Enfermedad', isCorrect: false }
+      { id: 'c3', type: 'image', imageUrl: img34, label: 'C3 Trabajo', isCorrect: true },
+      { id: 'c8', type: 'image', imageUrl: img35, label: 'C8 Infidelidad', isCorrect: false },
+      { id: 'c9', type: 'image', imageUrl: img36, label: 'C9 Enfermedad', isCorrect: false }
     ]
   },
   {
-    screenNumber: 27, // Corresponde al Slide 27
+    screenNumber: 27,
     classId: 3,
     className: 'Trabajo',
     mode: 'evaluation',
@@ -606,16 +615,15 @@ export const experimentSequence = [
     relationType: 'C3 → A3',
     maxAttempts: 1,
     hasReinforcement: false,
-    sample: { type: 'image', value: c3Img, label: 'C3 Trabajo' },
+    sample: { type: 'image', value: img34, label: 'C3 Trabajo' },
     stimulusLabel: 'Imagen presentada (C3):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a3', type: 'image', imageUrl: a3Img, label: 'A3 Trabajo', isCorrect: true },
-      { id: 'a8', type: 'image', imageUrl: a8InfidelidadImg, label: 'A8 Infidelidad', isCorrect: false },
-      { id: 'a9', type: 'image', imageUrl: a9EnfermedadImg, label: 'A9 Enfermedad', isCorrect: false }
+      { id: 'a3', type: 'image', imageUrl: img28, label: 'A3 Trabajo', isCorrect: true },
+      { id: 'a8', type: 'image', imageUrl: img29, label: 'A8 Infidelidad', isCorrect: false },
+      { id: 'a9', type: 'image', imageUrl: img30, label: 'A9 Enfermedad', isCorrect: false }
     ]
   }
 ];
 
-// Alias para retrocompatibilidad
 export const evaluationTrials = experimentSequence.filter(s => s.mode === 'evaluation');

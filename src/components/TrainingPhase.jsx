@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import CardAtmosphere from './CardAtmosphere';
+import { playApplause, playBuzzer } from '../utils/soundEffects';
 
 // Componente para el Dorso decorativo de la Carta de Tarot
 function TarotCardBack() {
@@ -118,12 +119,19 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
 
     onResponse?.(option.isCorrect);
 
+    // Efecto sonoro: Aplauso en respuesta correcta, Chicharra en respuesta incorrecta
+    if (option.isCorrect) {
+      playApplause();
+    } else {
+      playBuzzer();
+    }
+
     // En el 4to y último intento: NO volver a barajar las cartas.
     // Se mantiene la selección con su feedback y se habilita directamente el botón para avanzar.
     if (newAttempts >= maxAttempts) {
       setTimeout(() => {
         setActiveEffect(null);
-      }, 1800);
+      }, 3400);
       return;
     }
 
@@ -159,7 +167,9 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
               setTimeout(() => {
                 // 7. Fase 6: Finalizado, reposo interactivo y regreso al paisaje neutro
                 setShufflePhase('idle');
-                setActiveEffect(null);
+                setTimeout(() => {
+                  setActiveEffect(null);
+                }, 550);
               }, 550);
             }, 500);
           }, 280);

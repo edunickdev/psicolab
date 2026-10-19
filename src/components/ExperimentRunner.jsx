@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { experimentSequence } from '../data/tarotCards';
 import CardAtmosphere from './CardAtmosphere';
+import { playApplause, playBuzzer } from '../utils/soundEffects';
 
 // Componente para el Dorso decorativo místico de la Carta de Tarot
 function TarotCardBack() {
@@ -99,10 +100,10 @@ function ExperimentRunner({ onResponse }) {
   const maxAttempts = currentStage.maxAttempts || (isTraining ? 4 : 1);
   const attemptsRemaining = maxAttempts - attempts;
 
-  // Cargar y barajar opciones al cambiar de pantalla
+  // Cargar opciones al cambiar de pantalla (orden estricto de la presentación PPT)
   useEffect(() => {
     if (currentStage && currentStage.options) {
-      setCurrentOptions(shuffleArray(currentStage.options));
+      setCurrentOptions([...currentStage.options]);
       setAttempts(0);
       setSelectedOption(null);
       setActiveEffect(null);
@@ -133,12 +134,19 @@ function ExperimentRunner({ onResponse }) {
       setEffectKey(prev => prev + 1);
       onResponse?.(option.isCorrect);
 
+      // 2. Efecto sonoro de refuerzo contingente (Aplauso en acierto, Chicharra en error)
+      if (option.isCorrect) {
+        playApplause();
+      } else {
+        playBuzzer();
+      }
+
       // En el 4to y último intento de entrenamiento:
       // NO barajar de nuevo; se mantiene el feedback y se habilita el botón de avanzar
       if (newAttempts >= maxAttempts) {
         setTimeout(() => {
           setActiveEffect(null);
-        }, 1800);
+        }, 3400);
         return;
       }
 
@@ -172,9 +180,12 @@ function ExperimentRunner({ onResponse }) {
                 setSelectedOption(null);
 
                 setTimeout(() => {
-                  // Fase 6: Reposo interactivo y fin del estímulo
+                  // Fase 6: Reposo interactivo de las cartas (2850ms)
                   setShufflePhase('idle');
-                  setActiveEffect(null);
+                  // El ambiente visual concluye con desvanecimiento suave a los 3400ms
+                  setTimeout(() => {
+                    setActiveEffect(null);
+                  }, 550);
                 }, 550);
               }, 500);
             }, 280);

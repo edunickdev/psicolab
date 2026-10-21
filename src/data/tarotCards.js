@@ -212,7 +212,7 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B1):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a1', type: 'image', imageUrl: img7, label: 'A1 Dinero', isCorrect: true },
+      { id: 'a1', type: 'image', imageUrl: a1Img, label: 'A1 Dinero', isCorrect: true },
       { id: 'a4', type: 'image', imageUrl: img5, label: 'A4 Familia', isCorrect: false },
       { id: 'a5', type: 'image', imageUrl: img6, label: 'A5 Muerte', isCorrect: false }
     ]
@@ -269,7 +269,7 @@ export const experimentSequence = [
     stimulusLabel: 'Imagen presentada (C1):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a1', type: 'image', imageUrl: img7, label: 'A1 Dinero', isCorrect: true },
+      { id: 'a1', type: 'image', imageUrl: a1Img, label: 'A1 Dinero', isCorrect: true },
       { id: 'a4', type: 'image', imageUrl: img5, label: 'A4 Familia', isCorrect: false },
       { id: 'a5', type: 'image', imageUrl: img6, label: 'A5 Muerte', isCorrect: false }
     ]
@@ -387,7 +387,7 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B2):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a2', type: 'image', imageUrl: img27, label: 'A2 Embarazo', isCorrect: true },
+      { id: 'a2', type: 'image', imageUrl: a2Img, label: 'A2 Embarazo', isCorrect: true },
       { id: 'a6', type: 'image', imageUrl: img25, label: 'A6 Sexo', isCorrect: false },
       { id: 'a7', type: 'image', imageUrl: img26, label: 'A7 Amor', isCorrect: false }
     ]
@@ -444,7 +444,7 @@ export const experimentSequence = [
     stimulusLabel: 'Imagen presentada (C2):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a2', type: 'image', imageUrl: img27, label: 'A2 Embarazo', isCorrect: true },
+      { id: 'a2', type: 'image', imageUrl: a2Img, label: 'A2 Embarazo', isCorrect: true },
       { id: 'a6', type: 'image', imageUrl: img25, label: 'A6 Sexo', isCorrect: false },
       { id: 'a7', type: 'image', imageUrl: img26, label: 'A7 Amor', isCorrect: false }
     ]
@@ -562,7 +562,7 @@ export const experimentSequence = [
     stimulusLabel: 'Concepto presentado (B3):',
     optionsLabel: 'Selecciona la carta de Tarot correspondiente (A):',
     options: [
-      { id: 'a3', type: 'image', imageUrl: img31, label: 'A3 Trabajo', isCorrect: true },
+      { id: 'a3', type: 'image', imageUrl: a3Img, label: 'A3 Trabajo', isCorrect: true },
       { id: 'a8', type: 'image', imageUrl: img29, label: 'A8 Infidelidad', isCorrect: false },
       { id: 'a9', type: 'image', imageUrl: img30, label: 'A9 Enfermedad', isCorrect: false }
     ]

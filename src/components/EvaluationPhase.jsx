@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { evaluationTrials } from '../data/tarotCards';
 import CardAtmosphere from './CardAtmosphere';
 import TraceabilityTable from './TraceabilityTable';
@@ -67,6 +67,10 @@ function EvaluationPhase({ onBackToTraining }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [responses, setResponses] = useState([]);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [resultsSubView, setResultsSubView] = useState('summary'); // 'summary' | 'bitacora'
+
+  // Candado de idempotencia
+  const isProcessingRef = useRef(false);
 
   // Estados de animación fluidos (Gather -> Riffle -> Deal -> Reveal)
   const [currentOptions, setCurrentOptions] = useState([]);
@@ -95,6 +99,8 @@ function EvaluationPhase({ onBackToTraining }) {
     setSelectedOption(null);
     setResponses([]);
     setIsCompleted(false);
+    setResultsSubView('summary');
+    isProcessingRef.current = false;
     setShufflePhase('idle');
   };
 
@@ -103,10 +109,11 @@ function EvaluationPhase({ onBackToTraining }) {
     e.target.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"><rect width="100%" height="100%" rx="14" fill="${bgColor || '%231e293b'}"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="sans-serif" font-size="16" font-weight="bold">${encodeURIComponent(fallbackText)}</text></svg>`;
   };
 
-  // En evaluación: 1 intento por ensayo, sin refuerzo contingente (extinción)
+  // En evaluación: 1 intento por ensayo, sin refuerzo contingente (extinción) con idempotencia
   const handleOptionClick = (option) => {
-    if (selectedOption !== null || shufflePhase !== 'idle') return;
+    if (isProcessingRef.current || selectedOption !== null || shufflePhase !== 'idle') return;
 
+    isProcessingRef.current = true;
     setSelectedOption(option);
 
     const newResponse = {
@@ -129,6 +136,7 @@ function EvaluationPhase({ onBackToTraining }) {
 
   const handleNext = () => {
     if (selectedOption === null || shufflePhase !== 'idle') return;
+    isProcessingRef.current = false;
 
     if (trialIndex + 1 < totalTrials) {
       // 1. Voltear cartas y barajar hacia el siguiente trial
@@ -166,6 +174,8 @@ function EvaluationPhase({ onBackToTraining }) {
     setSelectedOption(null);
     setResponses([]);
     setIsCompleted(false);
+    setResultsSubView('summary');
+    isProcessingRef.current = false;
     setShufflePhase('idle');
   };
 
@@ -203,6 +213,19 @@ function EvaluationPhase({ onBackToTraining }) {
   }, [responses]);
 
   if (isCompleted) {
+    if (resultsSubView === 'bitacora') {
+      return (
+        <div className="training-phase">
+          <div className="experiment-card" style={{ maxWidth: '980px', padding: '1.8rem 2.2rem' }}>
+            <TraceabilityTable
+              trialHistory={responses}
+              onBack={() => setResultsSubView('summary')}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="training-phase">
         <div className="experiment-card" style={{ maxWidth: '860px', padding: '2.2rem 2.8rem' }}>
@@ -339,12 +362,19 @@ function EvaluationPhase({ onBackToTraining }) {
                 ? '✓ Se confirma empíricamente la formación de las clases de equivalencia {A, B, C}.'
                 : 'Se requiere reforzar el entrenamiento de línea base para consolidar la equivalencia plena.'}
             </div>
-
-            {/* Bitácora de Trazabilidad interactiva y exportación CSV/PDF */}
-            <TraceabilityTable trialHistory={responses} />
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setResultsSubView('bitacora')}
+              className="btn-view-bitacora"
+              title="Abrir bitácora detallada de respuestas"
+            >
+              <span>📋</span>
+              <span>Ver Bitácora de Trazabilidad</span>
+              <span>→</span>
+            </button>
             <button
               onClick={handleRestart}
               className="next-button ready"

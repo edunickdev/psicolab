@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import CardAtmosphere from './CardAtmosphere';
 import { playApplause, playBuzzer } from '../utils/soundEffects';
 
@@ -78,6 +78,10 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
   const [cardIndex, setCardIndex] = useState(0); // 0: Dinero, 1: Embarazo, 2: Trabajo
   const [trainingPhase, setTrainingPhase] = useState('AB'); // 'AB' o 'BC'
 
+  // Candado de idempotencia y bloqueo durante reproducción
+  const isProcessingRef = useRef(false);
+  const [isLocked, setIsLocked] = useState(false);
+
   // Estados de refuerzo contingente inmediato ('correct' | 'incorrect' | null)
   const [activeEffect, setActiveEffect] = useState(null);
   const [effectKey, setEffectKey] = useState(0);
@@ -98,6 +102,8 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
     const rawOptions = trainingPhase === 'AB' ? currentCard.optionsAB : currentCard.optionsBC;
     setCurrentOptions(shuffleArray(rawOptions));
     setShufflePhase('idle');
+    isProcessingRef.current = false;
+    setIsLocked(false);
   }, [currentCard, trainingPhase]);
 
   const handleImageError = (e, fallbackText, bgColor) => {
@@ -106,46 +112,67 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
   };
 
   const handleOptionClick = (option) => {
-    if (attempts >= maxAttempts || shufflePhase !== 'idle') return;
+    // 1. Candado de Idempotencia: Bloquea doble clic rápido
+    if (
+      isProcessingRef.current ||
+      isLocked ||
+      attempts >= maxAttempts ||
+      shufflePhase !== 'idle' ||
+      selectedOption !== null
+    ) {
+      return;
+    }
 
+    isProcessingRef.current = true;
+    setIsLocked(true);
     setSelectedOption(option);
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
 
-    // Disparar estímulo de refuerzo contingente (Rayos rojos en error / Pájaros en acierto)
+    // Disparar estímulo de refuerzo contingente visual
     const effectType = option.isCorrect ? 'correct' : 'incorrect';
     setActiveEffect(effectType);
     setEffectKey(prev => prev + 1);
-
     onResponse?.(option.isCorrect);
 
-    // Efecto sonoro: Aplauso en respuesta correcta, Chicharra en respuesta incorrecta
+    // Efecto sonoro
     if (option.isCorrect) {
       playApplause();
     } else {
       playBuzzer();
     }
 
-    // En el 4to y último intento: NO volver a barajar las cartas.
-    // Se mantiene la selección con su feedback y se habilita directamente el botón para avanzar.
+    // En el 4to y último intento: esperar a que termine el audio antes de desvanecer y desbloquear avance
     if (newAttempts >= maxAttempts) {
+      const waitTime = option.isCorrect ? 4400 : 1500;
       setTimeout(() => {
         setActiveEffect(null);
-      }, 3400);
+        setIsLocked(false);
+      }, waitTime);
       return;
     }
 
-    // 1. Mostrar resultado inicial con resplandor (700ms)
+    // Intentos 1 a 3: Duraciones naturales que suman la duración del audio (~4.4s en acierto)
+    const isCorrect = option.isCorrect;
+    const initialDelay = isCorrect ? 800 : 450;
+    const flipDownDuration = isCorrect ? 500 : 350;
+    const gatherDuration = isCorrect ? 700 : 400;
+    const riffleDuration = isCorrect ? 600 : 350;
+    const dealDuration = isCorrect ? 900 : 500;
+    const flipUpDuration = isCorrect ? 900 : 500;
+
+    // 1. Mostrar resultado inicial con resplandor
     setTimeout(() => {
-      // 2. Fase 1: Girar boca abajo (400ms)
+      // 2. Fase 1: Girar boca abajo y limpiar la selección inmediatamente para que las cartas queden impecables
       setShufflePhase('flipping-down');
+      setSelectedOption(null);
 
       setTimeout(() => {
-        // 3. Fase 2: Las 3 cartas se reúnen suavemente en el centro formando una baraja (420ms)
+        // 3. Fase 2: Las 3 cartas se reúnen suavemente en el centro formando una baraja
         setShufflePhase('gathering');
 
         setTimeout(() => {
-          // 4. Fase 3: Riffle/Corte en el centro y reordenación aleatoria en memoria (280ms)
+          // 4. Fase 3: Riffle/Corte en el centro y reordenación aleatoria en memoria
           setShufflePhase('riffle');
           setCurrentOptions(prev => {
             let shuffled = shuffleArray(prev);
@@ -156,34 +183,35 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
           });
 
           setTimeout(() => {
-            // 5. Fase 4: Reparto fluido desde el centro hacia los slots con curva elástica (480ms)
+            // 5. Fase 4: Reparto fluido desde el centro hacia los slots sin cortes
             setShufflePhase('dealing');
 
             setTimeout(() => {
-              // 6. Fase 5: Vuelven a descubrirse boca arriba en cascada 1-2-3 (550ms)
+              // 6. Fase 5: Vuelven a descubrirse boca arriba en cascada limpias
               setShufflePhase('flipping-up');
-              setSelectedOption(null);
 
               setTimeout(() => {
-                // 7. Fase 6: Finalizado, reposo interactivo y regreso al paisaje neutro
+                // 7. Fase 6: Finalizado, reposo interactivo y reactivación
                 setShufflePhase('idle');
-                setTimeout(() => {
-                  setActiveEffect(null);
-                }, 550);
-              }, 550);
-            }, 500);
-          }, 280);
-        }, 420);
-      }, 400);
-    }, 700);
+                setActiveEffect(null);
+                isProcessingRef.current = false;
+                setIsLocked(false);
+              }, flipUpDuration);
+            }, dealDuration);
+          }, riffleDuration);
+        }, gatherDuration);
+      }, flipDownDuration);
+    }, initialDelay);
   };
 
   const isLastTrainingStep = cardIndex + 1 >= cards.length && trainingPhase === 'BC';
 
   const handleNext = () => {
-    if (shufflePhase !== 'idle') return;
+    if (shufflePhase !== 'idle' || isLocked) return;
 
     setActiveEffect(null);
+    isProcessingRef.current = false;
+    setIsLocked(false);
     if (trainingPhase === 'AB') {
       // Pasar a fase B→C para la misma carta
       setTrainingPhase('BC');
@@ -275,10 +303,10 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
         <div className="options-section">
           <div className="options-horizontal">
             {currentOptions.map((option, index) => {
-              const isSelected = selectedOption?.id === option.id;
+              const isSelected = selectedOption?.id === option.id && (shufflePhase === 'idle' || attempts >= maxAttempts);
               return (
                 <div
-                  key={`slot-${option.id}-${trainingPhase}-${currentCard.id}`}
+                  key={`slot-pos-${index}-${trainingPhase}-${currentCard.id}`}
                   className={`card-3d-wrapper phase-${shufflePhase} slot-${index}`}
                   style={{ '--slot-index': index }}
                 >
@@ -291,7 +319,7 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
                         : ''
                     }`}
                     onClick={() => handleOptionClick(option)}
-                    disabled={attempts >= maxAttempts || shufflePhase !== 'idle'}
+                    disabled={isLocked || attempts >= maxAttempts || shufflePhase !== 'idle'}
                     aria-label={`Opción ${index + 1}`}
                   >
                     <div className="card-3d-inner">

@@ -56,7 +56,7 @@ const GROUPS_SCHEMA = [
   }
 ];
 
-export default function TraceabilityTable({ trialHistory = [] }) {
+export default function TraceabilityTable({ trialHistory = [], onBack }) {
   const [viewMode, setViewMode] = useState('matrix'); // 'matrix' | 'table'
 
   // Métricas rápidas
@@ -142,12 +142,25 @@ export default function TraceabilityTable({ trialHistory = [] }) {
         {/* Encabezado y Barra de Acciones */}
         <div className="trace-header">
           <div className="trace-title-group">
-            <h3 className="trace-title">
-              <span>📋</span> Bitácora de Trazabilidad de Respuestas
-            </h3>
-            <p className="trace-subtitle">
-              Registro ensayo a ensayo con diagnóstico de aciertos (✓) y fallos (✗)
-            </p>
+            {onBack && (
+              <button
+                type="button"
+                className="trace-back-btn"
+                onClick={onBack}
+                title="Volver a la vista de resultados principales"
+              >
+                <span>←</span>
+                <span>Volver al Resumen</span>
+              </button>
+            )}
+            <div>
+              <h3 className="trace-title">
+                <span>📋</span> Bitácora de Trazabilidad de Respuestas
+              </h3>
+              <p className="trace-subtitle">
+                Diagnóstico ensayo a ensayo de aciertos (✓) y fallos (✗)
+              </p>
+            </div>
           </div>
 
           <div className="trace-actions">
@@ -214,15 +227,17 @@ export default function TraceabilityTable({ trialHistory = [] }) {
         </div>
 
         {/* ================================================================= */}
-        {/* VISTA 1: MATRIZ AGRUPADA POR GRUPOS (ESTRUCTURA SOLICITADA)        */}
+        {/* CUERPO CON SCROLL INTERNO CONTROLADO                              */}
         {/* ================================================================= */}
-        {viewMode === 'matrix' && (
-          <div className="groups-matrix">
-            {GROUPS_SCHEMA.map((group) => {
-              // Calcular aciertos dentro de este grupo
-              const groupTrials = trialHistory.filter(t => t.classId === group.id);
-              const groupCorrect = groupTrials.filter(t => t.isCorrect).length;
-              const groupTotal = groupTrials.length;
+        <div className="trace-scroll-body">
+          {viewMode === 'matrix' && (
+            <div className="groups-matrix">
+              {GROUPS_SCHEMA.map((group) => {
+                // Calcular aciertos dentro de este grupo
+                const groupTrials = trialHistory.filter(t => t.classId === group.id);
+                const groupCorrect = groupTrials.filter(t => t.isCorrect).length;
+                const groupTotal = groupTrials.length;
+
 
               return (
                 <div key={group.id} className="group-row-card">
@@ -465,7 +480,9 @@ export default function TraceabilityTable({ trialHistory = [] }) {
             </table>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
 }
+

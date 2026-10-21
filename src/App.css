@@ -682,17 +682,17 @@ body {
 /* FASE 1: flipping-down - Las cartas se elevan suavemente y giran boca abajo */
 .phase-flipping-down {
   transform: translate3d(0, -10px, 0);
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .phase-flipping-down .card-3d-inner {
   transform: rotateY(180deg);
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* FASE 2: gathering - Las 3 cartas se reúnen suavemente en el centro formando una baraja */
 .phase-gathering {
-  transition: transform 0.42s cubic-bezier(0.38, 0, 0.24, 1);
+  transition: transform 0.65s cubic-bezier(0.38, 0, 0.24, 1);
 }
 
 .phase-gathering.slot-0 {
@@ -714,9 +714,9 @@ body {
   transform: rotateY(180deg);
 }
 
-/* FASE 3: riffle - Corte / Barajeo rápido en el centro */
+/* FASE 3: riffle - Corte / Barajeo en el centro */
 .phase-riffle {
-  transition: transform 0.28s ease-in-out;
+  transition: transform 0.55s ease-in-out;
 }
 
 .phase-riffle.slot-0 {
@@ -738,11 +738,11 @@ body {
   transform: rotateY(180deg);
 }
 
-/* FASE 4: dealing - Reparto fluido hacia sus nuevos slots con curva elástica */
+/* FASE 4: dealing - Reparto fluido hacia sus nuevos slots con curva suave */
 .phase-dealing {
   transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-  transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: calc(var(--slot-index) * 45ms);
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--slot-index) * 60ms);
   z-index: 2;
 }
 
@@ -750,18 +750,18 @@ body {
   transform: rotateY(180deg);
 }
 
-/* FASE 5: flipping-up - Volteo hacia arriba en cascada 1-2-3 */
+/* FASE 5: flipping-up - Volteo hacia arriba en cascada fluido */
 .phase-flipping-up {
   transform: translate3d(0, 0, 0) scale(1);
 }
 
 .phase-flipping-up .card-3d-inner {
   transform: rotateY(0deg);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: calc(var(--slot-index) * 60ms);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--slot-index) * 80ms);
 }
 
-/* FASE 6: idle - Reposo interactivo */
+/* FASE 6: idle - Reposo interactivo sin cortes */
 .phase-idle {
   transform: translate3d(0, 0, 0);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
@@ -769,6 +769,7 @@ body {
 
 .phase-idle .card-3d-inner {
   transform: rotateY(0deg);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Botón 3D de la Carta */
@@ -787,6 +788,7 @@ body {
 
 .option-button-3d:disabled {
   cursor: default;
+  pointer-events: none;
 }
 
 /* Caras de la Carta */

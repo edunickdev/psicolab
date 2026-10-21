@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { experimentSequence } from '../data/tarotCards';
 import CardAtmosphere from './CardAtmosphere';
 import { playApplause, playBuzzer } from '../utils/soundEffects';
@@ -83,8 +83,12 @@ function ExperimentRunner({ onResponse }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [evaluationResponses, setEvaluationResponses] = useState([]);
   const [trialHistory, setTrialHistory] = useState([]);
-  const [showLiveBitacora, setShowLiveBitacora] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [resultsSubView, setResultsSubView] = useState('summary'); // 'summary' | 'bitacora'
+
+  // Control estricto de Idempotencia y Bloqueo contra doble clic o desincronización de sonido
+  const isProcessingRef = useRef(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   // Refuerzo contingente ('correct' | 'incorrect' | null)
   const [activeEffect, setActiveEffect] = useState(null);
@@ -111,6 +115,8 @@ function ExperimentRunner({ onResponse }) {
       setSelectedOption(null);
       setActiveEffect(null);
       setShufflePhase('idle');
+      isProcessingRef.current = false;
+      setIsLocked(false);
     }
   }, [currentIndex, currentStage]);
 
@@ -119,11 +125,24 @@ function ExperimentRunner({ onResponse }) {
     e.target.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"><rect width="100%" height="100%" rx="14" fill="${bgColor || '%231e293b'}"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="sans-serif" font-size="16" font-weight="bold">${encodeURIComponent(fallbackText)}</text></svg>`;
   };
 
-  // Manejador al hacer clic en una opción
+  // Manejador al hacer clic en una opción con IDEMPOTENCIA y SINCRONIZACIÓN
   const handleOptionClick = (option) => {
-    if (attempts >= maxAttempts || shufflePhase !== 'idle') return;
+    // 1. Candado de Idempotencia: Si ya se está procesando, bloqueado o barajando, ignorar clics rápidos
+    if (
+      isProcessingRef.current ||
+      isLocked ||
+      attempts >= maxAttempts ||
+      shufflePhase !== 'idle' ||
+      selectedOption !== null
+    ) {
+      return;
+    }
 
+    // Bloqueo síncrono inmediato (inmune a retrasos de re-renderizado de React)
+    isProcessingRef.current = true;
+    setIsLocked(true);
     setSelectedOption(option);
+
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
 
@@ -150,39 +169,50 @@ function ExperimentRunner({ onResponse }) {
     // CASO 1: MODO ENTRENAMIENTO (4 INTENTOS)
     // ==========================================
     if (isTraining) {
-      // 1. Disparar refuerzo contingente inmediato
+      // 1. Disparar refuerzo contingente visual
       const effectType = option.isCorrect ? 'correct' : 'incorrect';
       setActiveEffect(effectType);
       setEffectKey(prev => prev + 1);
       onResponse?.(option.isCorrect);
 
-      // 2. Efecto sonoro de refuerzo contingente (Aplauso en acierto, Chicharra en error)
+      // 2. Reproducir sonido
       if (option.isCorrect) {
         playApplause();
       } else {
         playBuzzer();
       }
 
-      // En el 4to y último intento de entrenamiento:
-      // NO barajar de nuevo; se mantiene el feedback y se habilita el botón de avanzar
+      // En el 4to y último intento: esperar a que concluya el audio antes de desvanecer el efecto; NO se vuelve a barajar
       if (newAttempts >= maxAttempts) {
+        const waitTime = option.isCorrect ? 4400 : 1500;
         setTimeout(() => {
           setActiveEffect(null);
-        }, 3400);
+          setIsLocked(false);
+        }, waitTime);
         return;
       }
 
-      // Intentos 1 a 3: Barajeo fluido con animación completa
+      // Intentos 1 a 3: Duraciones naturales que suman la duración del audio (~4.4s en acierto)
+      const isCorrect = option.isCorrect;
+      const initialDelay = isCorrect ? 800 : 450;
+      const flipDownDuration = isCorrect ? 500 : 350;
+      const gatherDuration = isCorrect ? 700 : 400;
+      const riffleDuration = isCorrect ? 600 : 350;
+      const dealDuration = isCorrect ? 900 : 500;
+      const flipUpDuration = isCorrect ? 900 : 500;
+
+      // 1. Mostrar resultado inicial con resplandor
       setTimeout(() => {
-        // Fase 1: Girar boca abajo (400ms)
+        // 2. Fase 1: Girar boca abajo y limpiar la selección inmediatamente para que las cartas queden limpias
         setShufflePhase('flipping-down');
+        setSelectedOption(null);
 
         setTimeout(() => {
-          // Fase 2: Las 3 cartas se reúnen en el centro formando una baraja (420ms)
+          // 3. Fase 2: Las 3 cartas se reúnen suavemente en el centro formando una baraja
           setShufflePhase('gathering');
 
           setTimeout(() => {
-            // Fase 3: Riffle/Corte en el centro y reordenación aleatoria en memoria (280ms)
+            // 4. Fase 3: Riffle/Corte en el centro y reordenación aleatoria en memoria
             setShufflePhase('riffle');
             setCurrentOptions(prev => {
               let shuffled = shuffleArray(prev);
@@ -193,33 +223,30 @@ function ExperimentRunner({ onResponse }) {
             });
 
             setTimeout(() => {
-              // Fase 4: Reparto fluido desde el centro hacia los slots (480ms)
+              // 5. Fase 4: Reparto fluido desde el centro hacia los slots sin cortes
               setShufflePhase('dealing');
 
               setTimeout(() => {
-                // Fase 5: Vuelven a descubrirse boca arriba (550ms)
+                // 6. Fase 5: Vuelven a descubrirse boca arriba en cascada limpias
                 setShufflePhase('flipping-up');
-                setSelectedOption(null);
 
                 setTimeout(() => {
-                  // Fase 6: Reposo interactivo de las cartas (2850ms)
+                  // 7. Fase 6: Finalizado, reposo interactivo y reactivación
                   setShufflePhase('idle');
-                  // El ambiente visual concluye con desvanecimiento suave a los 3400ms
-                  setTimeout(() => {
-                    setActiveEffect(null);
-                  }, 550);
-                }, 550);
-              }, 500);
-            }, 280);
-          }, 420);
-        }, 400);
-      }, 700);
+                  setActiveEffect(null);
+                  isProcessingRef.current = false;
+                  setIsLocked(false);
+                }, flipUpDuration);
+              }, dealDuration);
+            }, riffleDuration);
+          }, gatherDuration);
+        }, flipDownDuration);
+      }, initialDelay);
     } 
     // ==========================================
     // CASO 2: MODO EVALUACIÓN (1 INTENTO ÚNICO)
     // ==========================================
     else {
-      // En evaluación: Sin refuerzo contingente (extinción) y sin overlay de acierto/error
       const newResponse = {
         screenNumber: currentStage.screenNumber,
         classId: currentStage.classId,
@@ -236,6 +263,7 @@ function ExperimentRunner({ onResponse }) {
         ...prev.filter(r => r.screenNumber !== currentStage.screenNumber),
         newResponse
       ]);
+      // En evaluación: se registra 1 intento y se mantiene el bloqueo hasta avanzar a la siguiente pantalla
     }
   };
 
@@ -243,9 +271,11 @@ function ExperimentRunner({ onResponse }) {
   const canProceed = attempts >= maxAttempts && shufflePhase === 'idle';
 
   const handleNext = () => {
-    if (!canProceed || shufflePhase !== 'idle') return;
+    if (!canProceed || shufflePhase !== 'idle' || isLocked) return;
 
     setActiveEffect(null);
+    isProcessingRef.current = false;
+    setIsLocked(false);
 
     if (currentIndex + 1 < experimentSequence.length) {
       // Transición suave hacia la siguiente pantalla
@@ -267,6 +297,8 @@ function ExperimentRunner({ onResponse }) {
 
               setTimeout(() => {
                 setShufflePhase('idle');
+                isProcessingRef.current = false;
+                setIsLocked(false);
               }, 480);
             }, 420);
           }, 260);
@@ -287,6 +319,9 @@ function ExperimentRunner({ onResponse }) {
     setIsCompleted(false);
     setActiveEffect(null);
     setShufflePhase('idle');
+    setResultsSubView('summary');
+    isProcessingRef.current = false;
+    setIsLocked(false);
   };
 
   // Salto rápido a cualquier pantalla (útil para experimentador o pruebas)
@@ -298,6 +333,8 @@ function ExperimentRunner({ onResponse }) {
       setSelectedOption(null);
       setActiveEffect(null);
       setShufflePhase('idle');
+      isProcessingRef.current = false;
+      setIsLocked(false);
     }
   };
 
@@ -359,9 +396,24 @@ function ExperimentRunner({ onResponse }) {
   };
 
   // =========================================================================
-  // PANTALLA FINAL: RESULTADOS ANALÍTICOS (AL COMPLETAR LAS 27 PANTALLAS)
+  // PANTALLAS DE RESULTADOS ANALÍTICOS (AL COMPLETAR LAS 27 PANTALLAS)
   // =========================================================================
   if (isCompleted) {
+    // SUB-RUTA DEDICADA 1: VISTA DE LA BITÁCORA CON SCROLL INTERNO CONTROLADO
+    if (resultsSubView === 'bitacora') {
+      return (
+        <div className="training-phase">
+          <div className="experiment-card" style={{ maxWidth: '980px', padding: '1.8rem 2.2rem' }}>
+            <TraceabilityTable
+              trialHistory={trialHistory}
+              onBack={() => setResultsSubView('summary')}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // SUB-RUTA DEDICADA 2: RESUMEN CIENTÍFICO GLOBAL DE EQUIVALENCIA
     return (
       <div className="training-phase">
         <div className="experiment-card" style={{ maxWidth: '920px', padding: '2.4rem 2.8rem' }}>
@@ -504,12 +556,19 @@ function ExperimentRunner({ onResponse }) {
                 ? '✓ Se confirma empíricamente la formación de las clases de equivalencia de 3 miembros {A, B, C}.'
                 : 'Se requiere reforzar el entrenamiento de línea base para consolidar la equivalencia plena.'}
             </div>
-
-            {/* Bitácora de Trazabilidad interactiva y exportación CSV/PDF */}
-            <TraceabilityTable trialHistory={trialHistory} />
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '0.8rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '1.2rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setResultsSubView('bitacora')}
+              className="btn-view-bitacora"
+              title="Abrir bitácora detallada de respuestas ensayo a ensayo"
+            >
+              <span>📋</span>
+              <span>Ver Bitácora de Trazabilidad</span>
+              <span>→</span>
+            </button>
             <button
               onClick={handleRestart}
               className="next-button ready"
@@ -556,18 +615,6 @@ function ExperimentRunner({ onResponse }) {
               {attempts === 0 ? '1 Intento' : 'Completado ✓'}
             </span>
           )}
-
-          {/* Acceso a Bitácora en vivo durante el experimento */}
-          {trialHistory.length > 0 && (
-            <button
-              type="button"
-              className="live-bitacora-btn"
-              onClick={() => setShowLiveBitacora(true)}
-              title="Abrir bitácora de trazabilidad en tiempo real"
-            >
-              📋 Bitácora ({trialHistory.length})
-            </button>
-          )}
         </div>
 
 
@@ -594,7 +641,7 @@ function ExperimentRunner({ onResponse }) {
         <div className="options-section">
           <div className="options-horizontal">
             {currentOptions.map((option, index) => {
-              const isSelected = selectedOption?.id === option.id;
+              const isSelected = selectedOption?.id === option.id && (shufflePhase === 'idle' || attempts >= maxAttempts);
               
               // Clases de estado del botón
               let buttonStateClass = '';
@@ -608,14 +655,14 @@ function ExperimentRunner({ onResponse }) {
 
               return (
                 <div
-                  key={`stage-slot-${option.id}-${currentStage.screenNumber}`}
+                  key={`stage-slot-pos-${index}-${currentStage.screenNumber}`}
                   className={`card-3d-wrapper phase-${shufflePhase} slot-${index}`}
                   style={{ '--slot-index': index }}
                 >
                   <button
                     className={`option-button-3d ${buttonStateClass}`}
                     onClick={() => handleOptionClick(option)}
-                    disabled={attempts >= maxAttempts || shufflePhase !== 'idle'}
+                    disabled={isLocked || attempts >= maxAttempts || shufflePhase !== 'idle'}
                     aria-label={`Opción ${index + 1}`}
                   >
                     <div className="card-3d-inner">
@@ -673,26 +720,6 @@ function ExperimentRunner({ onResponse }) {
           )}
         </div>
       </div>
-
-      {/* Modal flotante de bitácora en tiempo real */}
-      {showLiveBitacora && (
-        <div className="bitacora-modal-overlay" onClick={() => setShowLiveBitacora(false)}>
-          <div className="bitacora-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="bitacora-modal-header">
-              <h3>📋 Bitácora de Trazabilidad en Tiempo Real</h3>
-              <button
-                type="button"
-                className="bitacora-modal-close"
-                onClick={() => setShowLiveBitacora(false)}
-                title="Cerrar bitácora"
-              >
-                ✕
-              </button>
-            </div>
-            <TraceabilityTable trialHistory={trialHistory} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

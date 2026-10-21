@@ -207,7 +207,7 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
   const isLastTrainingStep = cardIndex + 1 >= cards.length && trainingPhase === 'BC';
 
   const handleNext = () => {
-    if (shufflePhase !== 'idle' || isLocked) return;
+    if (shufflePhase !== 'idle') return;
 
     setActiveEffect(null);
     isProcessingRef.current = false;
@@ -372,9 +372,6 @@ function TrainingPhase({ cards, onResponse, onProceedToEvaluation }) {
             </span>
             <span className="btn-arrow">→</span>
           </button>
-          {!canProceed && (
-            <span className="next-hint">Completa los {attemptsRemaining} intentos restantes para desbloquear</span>
-          )}
         </div>
       </div>
     </div>

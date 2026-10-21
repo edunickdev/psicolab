@@ -139,30 +139,10 @@ function EvaluationPhase({ onBackToTraining }) {
     isProcessingRef.current = false;
 
     if (trialIndex + 1 < totalTrials) {
-      // 1. Voltear cartas y barajar hacia el siguiente trial
-      setShufflePhase('flipping-down');
-
-      setTimeout(() => {
-        setShufflePhase('gathering');
-
-        setTimeout(() => {
-          setShufflePhase('riffle');
-          setTrialIndex(prev => prev + 1);
-
-          setTimeout(() => {
-            setShufflePhase('dealing');
-
-            setTimeout(() => {
-              setShufflePhase('flipping-up');
-              setSelectedOption(null);
-
-              setTimeout(() => {
-                setShufflePhase('idle');
-              }, 500);
-            }, 450);
-          }, 260);
-        }, 380);
-      }, 350);
+      // Avanzar directamente al siguiente ensayo
+      setTrialIndex(prev => prev + 1);
+      setSelectedOption(null);
+      setShufflePhase('idle');
     } else {
       // Fin de la evaluación
       setIsCompleted(true);
@@ -442,7 +422,7 @@ function EvaluationPhase({ onBackToTraining }) {
               const isSelected = selectedOption?.id === option.id;
               return (
                 <div
-                  key={`eval-slot-${option.id}-${trialIndex}-${classFilter}`}
+                  key={`eval-slot-pos-${index}-${trialIndex}-${classFilter}`}
                   className={`card-3d-wrapper phase-${shufflePhase} slot-${index}`}
                   style={{ '--slot-index': index }}
                 >
@@ -500,9 +480,6 @@ function EvaluationPhase({ onBackToTraining }) {
             <span>{trialIndex + 1 === totalTrials ? 'Ver Resultados' : 'Siguiente Ensayo'}</span>
             <span className="btn-arrow">→</span>
           </button>
-          {!canProceed && (
-            <span className="next-hint">Selecciona una opción para registrar tu respuesta</span>
-          )}
         </div>
       </div>
     </div>

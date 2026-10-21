@@ -263,7 +263,9 @@ function ExperimentRunner({ onResponse }) {
         ...prev.filter(r => r.screenNumber !== currentStage.screenNumber),
         newResponse
       ]);
-      // En evaluación: se registra 1 intento y se mantiene el bloqueo hasta avanzar a la siguiente pantalla
+      // En evaluación: se registra 1 intento y se desbloquea el botón de avance
+      isProcessingRef.current = false;
+      setIsLocked(false);
     }
   };
 
@@ -271,39 +273,18 @@ function ExperimentRunner({ onResponse }) {
   const canProceed = attempts >= maxAttempts && shufflePhase === 'idle';
 
   const handleNext = () => {
-    if (!canProceed || shufflePhase !== 'idle' || isLocked) return;
+    if (!canProceed || shufflePhase !== 'idle') return;
 
     setActiveEffect(null);
     isProcessingRef.current = false;
     setIsLocked(false);
 
     if (currentIndex + 1 < experimentSequence.length) {
-      // Transición suave hacia la siguiente pantalla
-      setShufflePhase('flipping-down');
-
-      setTimeout(() => {
-        setShufflePhase('gathering');
-
-        setTimeout(() => {
-          setShufflePhase('riffle');
-          setCurrentIndex(prev => prev + 1);
-
-          setTimeout(() => {
-            setShufflePhase('dealing');
-
-            setTimeout(() => {
-              setShufflePhase('flipping-up');
-              setSelectedOption(null);
-
-              setTimeout(() => {
-                setShufflePhase('idle');
-                isProcessingRef.current = false;
-                setIsLocked(false);
-              }, 480);
-            }, 420);
-          }, 260);
-        }, 360);
-      }, 320);
+      // Avanzar directamente a la siguiente pantalla sin animaciones traslapadas
+      setCurrentIndex(prev => prev + 1);
+      setAttempts(0);
+      setSelectedOption(null);
+      setShufflePhase('idle');
     } else {
       // Se completaron las 27 pantallas
       setIsCompleted(true);
@@ -711,13 +692,6 @@ function ExperimentRunner({ onResponse }) {
             <span>{getNextButtonLabel()}</span>
             <span className="btn-arrow">→</span>
           </button>
-          {!canProceed && (
-            <span className="next-hint">
-              {isTraining 
-                ? `Completa los ${attemptsRemaining} intentos restantes para desbloquear el avance` 
-                : 'Selecciona una opción para registrar tu ensayo'}
-            </span>
-          )}
         </div>
       </div>
     </div>

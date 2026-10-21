@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { evaluationTrials } from '../data/tarotCards';
 import CardAtmosphere from './CardAtmosphere';
+import TraceabilityTable from './TraceabilityTable';
 
 // Componente para el Dorso decorativo de la Carta de Tarot
 function TarotCardBack() {
@@ -116,7 +117,11 @@ function EvaluationPhase({ onBackToTraining }) {
       classId: currentTrial.classId,
       className: currentTrial.className,
       isCorrect: option.isCorrect,
-      selectedLabel: option.label || option.text
+      selectedLabel: option.label || option.text,
+      correctLabel: currentTrial.options.find(o => o.isCorrect)?.label || currentTrial.options.find(o => o.isCorrect)?.text,
+      attemptNumber: 1,
+      maxAttempts: 1,
+      timestamp: new Date().toLocaleTimeString()
     };
 
     setResponses(prev => [...prev, newResponse]);
@@ -334,6 +339,9 @@ function EvaluationPhase({ onBackToTraining }) {
                 ? '✓ Se confirma empíricamente la formación de las clases de equivalencia {A, B, C}.'
                 : 'Se requiere reforzar el entrenamiento de línea base para consolidar la equivalencia plena.'}
             </div>
+
+            {/* Bitácora de Trazabilidad interactiva y exportación CSV/PDF */}
+            <TraceabilityTable trialHistory={responses} />
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}>

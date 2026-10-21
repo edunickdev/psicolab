@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { experimentSequence } from '../data/tarotCards';
 import CardAtmosphere from './CardAtmosphere';
 import { playApplause, playBuzzer } from '../utils/soundEffects';
+import TraceabilityTable from './TraceabilityTable';
 
 // Componente para el Dorso decorativo místico de la Carta de Tarot
 function TarotCardBack() {
@@ -81,6 +82,8 @@ function ExperimentRunner({ onResponse }) {
   const [attempts, setAttempts] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [evaluationResponses, setEvaluationResponses] = useState([]);
+  const [trialHistory, setTrialHistory] = useState([]);
+  const [showLiveBitacora, setShowLiveBitacora] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   // Refuerzo contingente ('correct' | 'incorrect' | null)
@@ -123,6 +126,25 @@ function ExperimentRunner({ onResponse }) {
     setSelectedOption(option);
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
+
+    // Registro cronológico en la bitácora completa de trazabilidad (ensayo a ensayo)
+    const historyEntry = {
+      id: `screen-${currentStage.screenNumber}-att-${newAttempts}-${Date.now()}`,
+      screenNumber: currentStage.screenNumber,
+      mode: currentStage.mode,
+      classId: currentStage.classId,
+      className: currentStage.className,
+      property: currentStage.property,
+      propertyTitle: currentStage.propertyTitle,
+      relationType: currentStage.relationType,
+      attemptNumber: newAttempts,
+      maxAttempts: maxAttempts,
+      isCorrect: option.isCorrect,
+      selectedLabel: option.label || option.text || option.id,
+      correctLabel: currentStage.options.find(o => o.isCorrect)?.label || currentStage.options.find(o => o.isCorrect)?.text,
+      timestamp: new Date().toLocaleTimeString()
+    };
+    setTrialHistory(prev => [...prev, historyEntry]);
 
     // ==========================================
     // CASO 1: MODO ENTRENAMIENTO (4 INTENTOS)
@@ -261,6 +283,7 @@ function ExperimentRunner({ onResponse }) {
     setAttempts(0);
     setSelectedOption(null);
     setEvaluationResponses([]);
+    setTrialHistory([]);
     setIsCompleted(false);
     setActiveEffect(null);
     setShufflePhase('idle');
@@ -481,6 +504,9 @@ function ExperimentRunner({ onResponse }) {
                 ? '✓ Se confirma empíricamente la formación de las clases de equivalencia de 3 miembros {A, B, C}.'
                 : 'Se requiere reforzar el entrenamiento de línea base para consolidar la equivalencia plena.'}
             </div>
+
+            {/* Bitácora de Trazabilidad interactiva y exportación CSV/PDF */}
+            <TraceabilityTable trialHistory={trialHistory} />
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '0.8rem' }}>
@@ -529,6 +555,18 @@ function ExperimentRunner({ onResponse }) {
             <span className="attempts-number" style={{ fontWeight: 800 }}>
               {attempts === 0 ? '1 Intento' : 'Completado ✓'}
             </span>
+          )}
+
+          {/* Acceso a Bitácora en vivo durante el experimento */}
+          {trialHistory.length > 0 && (
+            <button
+              type="button"
+              className="live-bitacora-btn"
+              onClick={() => setShowLiveBitacora(true)}
+              title="Abrir bitácora de trazabilidad en tiempo real"
+            >
+              📋 Bitácora ({trialHistory.length})
+            </button>
           )}
         </div>
 
@@ -635,6 +673,26 @@ function ExperimentRunner({ onResponse }) {
           )}
         </div>
       </div>
+
+      {/* Modal flotante de bitácora en tiempo real */}
+      {showLiveBitacora && (
+        <div className="bitacora-modal-overlay" onClick={() => setShowLiveBitacora(false)}>
+          <div className="bitacora-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="bitacora-modal-header">
+              <h3>📋 Bitácora de Trazabilidad en Tiempo Real</h3>
+              <button
+                type="button"
+                className="bitacora-modal-close"
+                onClick={() => setShowLiveBitacora(false)}
+                title="Cerrar bitácora"
+              >
+                ✕
+              </button>
+            </div>
+            <TraceabilityTable trialHistory={trialHistory} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
